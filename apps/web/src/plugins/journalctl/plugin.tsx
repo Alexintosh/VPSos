@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { PluginDefinition } from '../types';
-import { getConfig, openProcSocket, spawnProc, stopProc } from '../../api/client';
-import { useUI } from '../../ui/state';
+import type { PluginDefinition } from '@vpsos/types';
+import { getConfig, openProcSocket, spawnProc, stopProc } from '@vpsos/client';
+import { useUI } from '@vpsos/useUI';
 
 const JournalctlApp = ({ windowId }: { windowId: string }) => {
   const setMenus = useUI((s) => s.setMenus);

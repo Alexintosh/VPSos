@@ -1,4 +1,4 @@
-import { PluginDefinition } from './types';
+import { PluginDefinition } from '@vpsos/types';
 
 // Vite: include plugin modules at build time.
 const modules = import.meta.glob('./**/plugin.tsx', { eager: true }) as Record<string, any>;

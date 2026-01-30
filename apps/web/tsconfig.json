@@ -4,8 +4,15 @@
     "jsx": "react-jsx",
     "rootDir": "../..",
     "outDir": "dist",
+    "baseUrl": "./src",
     "paths": {
-      "@devos/shared": ["../../packages/shared/src"]
+      "@devos/shared": ["../../packages/shared/src"],
+      "@vpsos/types": ["plugins/types"],
+      "@vpsos/client": ["api/client"],
+      "@vpsos/useUI": ["ui/state"],
+      "@vpsos/plugins/*": ["plugins/*"],
+      "@vpsos/ui/*": ["ui/*"],
+      "@vpsos/api/*": ["api/*"]
     }
   },
   "include": ["src", "vite.config.ts"]

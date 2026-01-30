@@ -6,7 +6,7 @@ import { TasksApp } from '../apps/Tasks';
 import { getAuthToken, login } from '../api/client';
 import { useState } from 'react';
 import { MenuBar } from './MenuBar';
-import { pluginRegistry, findPluginApp } from '../plugins/registry';
+import { pluginRegistry, findPluginApp } from '@vpsos/plugins/registry';
 
 const PluginHost = ({ windowId, pluginAppId }: { windowId: string; pluginAppId: string }) => {
   const app = findPluginApp(pluginAppId);
