@@ -2,14 +2,27 @@ import { useEffect, useRef } from 'react';
 import { Terminal as XTerm } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
-import { getAuthToken, openPty, openPtySocket, resizePtyApi, closePtyApi } from '../api/client';
+import { openPty, openPtySocket, resizePtyApi, closePtyApi } from '../api/client';
+import { useUI } from '../ui/state';
 
-export const TerminalApp = () => {
+export const TerminalApp = ({ windowId }: { windowId: string }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const termRef = useRef<XTerm | null>(null);
   const ptyIdRef = useRef<string | null>(null);
   const fitRef = useRef<FitAddon | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
+  const setMenus = useUI((s) => s.setMenus);
+
+  useEffect(() => {
+    setMenus(windowId, [{
+      title: 'Shell',
+      items: [
+        { label: 'Clear', action: () => termRef.current?.clear() },
+        { label: 'Reset', action: () => termRef.current?.reset() }
+      ]
+    }]);
+    return () => setMenus(windowId, []);
+  }, [setMenus, windowId]);
 
   useEffect(() => {
     const term = new XTerm({ fontSize: 13, convertEol: true });

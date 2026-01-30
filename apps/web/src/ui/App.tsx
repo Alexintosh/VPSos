@@ -3,8 +3,9 @@ import { Window } from './Window';
 import { TerminalApp } from '../apps/Terminal';
 import { FileExplorer } from '../apps/FileExplorer';
 import { TasksApp } from '../apps/Tasks';
-import { getAuthToken, setAuthToken, login } from '../api/client';
+import { getAuthToken, login } from '../api/client';
 import { useState } from 'react';
+import { MenuBar } from './MenuBar';
 
 export const App = () => {
   const { windows, open } = useUI();
@@ -25,7 +26,7 @@ export const App = () => {
   return (
     <div className="desktop">
       <div className="topbar">
-        <div>Dev OS</div>
+        <MenuBar />
         <div className="row gap">
           <input value={token} onChange={(e) => setToken(e.target.value)} placeholder="auth token" />
           <button onClick={saveToken}>Save token</button>
@@ -35,9 +36,9 @@ export const App = () => {
 
       {windows.map((win) => (
         <Window key={win.id} win={win}>
-          {win.app === 'terminal' && <TerminalApp />}
-          {win.app === 'files' && <FileExplorer />}
-          {win.app === 'tasks' && <TasksApp />}
+          {win.app === 'terminal' && <TerminalApp windowId={win.id} />}
+          {win.app === 'files' && <FileExplorer windowId={win.id} />}
+          {win.app === 'tasks' && <TasksApp windowId={win.id} />}
         </Window>
       ))}
 

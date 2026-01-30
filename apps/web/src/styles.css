@@ -37,6 +37,26 @@ html, body, #root { margin: 0; padding: 0; width: 100%; height: 100%; background
 .topbar button { padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.08); color: var(--text); cursor: pointer; }
 .muted { color: var(--muted); font-size: 12px; }
 
+.menubar { display: flex; gap: 8px; align-items: center; }
+.menubar .menu { position: relative; }
+.menubar button { background: none; border: none; color: var(--text); font-size: 14px; padding: 6px 8px; border-radius: 4px; cursor: pointer; }
+.menubar button:hover { background: rgba(255,255,255,0.12); }
+.menu-dropdown {
+  position: absolute;
+  top: 28px;
+  left: 0;
+  background: rgba(20,22,30,0.95);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  z-index: 2000;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+.menu-dropdown button { width: 100%; text-align: left; }
+.menu-dropdown button:disabled { opacity: 0.4; cursor: not-allowed; }
+
 .dock {
   position: absolute;
   bottom: 12px;
@@ -77,6 +97,23 @@ html, body, #root { margin: 0; padding: 0; width: 100%; height: 100%; background
 
 .window.minimized { height: 44px !important; }
 .window.maximized { left: 8px !important; top: 52px !important; width: calc(100% - 16px) !important; height: calc(100% - 72px) !important; }
+
+.resize-handle {
+  position: absolute;
+  z-index: 5;
+}
+.resize-handle.n,
+.resize-handle.s { left: 0; right: 0; height: 6px; cursor: ns-resize; }
+.resize-handle.n { top: -3px; }
+.resize-handle.s { bottom: -3px; }
+.resize-handle.e,
+.resize-handle.w { top: 0; bottom: 0; width: 6px; cursor: ew-resize; }
+.resize-handle.e { right: -3px; }
+.resize-handle.w { left: -3px; }
+.resize-handle.ne { top: -3px; right: -3px; width: 12px; height: 12px; cursor: nesw-resize; }
+.resize-handle.nw { top: -3px; left: -3px; width: 12px; height: 12px; cursor: nwse-resize; }
+.resize-handle.se { bottom: -3px; right: -3px; width: 12px; height: 12px; cursor: nwse-resize; }
+.resize-handle.sw { bottom: -3px; left: -3px; width: 12px; height: 12px; cursor: nesw-resize; }
 
 .titlebar {
   height: 36px;

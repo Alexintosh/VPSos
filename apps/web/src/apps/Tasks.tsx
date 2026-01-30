@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useTasks } from '../ui/tasksStore';
 import { openProcSocket, stopProc } from '../api/client';
+import { useUI } from '../ui/state';
 
 interface LogEntry { type: 'stdout' | 'stderr'; data: string; }
 
-export const TasksApp = () => {
+export const TasksApp = ({ windowId }: { windowId: string }) => {
   const { tasks } = useTasks();
   const [selected, setSelected] = useState<string | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [exitCode, setExitCode] = useState<number | null>(null);
+  const setMenus = useUI((s) => s.setMenus);
 
   useEffect(() => {
     if (!selected) return;
@@ -23,6 +25,16 @@ export const TasksApp = () => {
       } catch {}
     };
     return () => ws.close();
+
+  useEffect(() => {
+    setMenus(windowId, [{
+      title: 'Tasks',
+      items: [
+        { label: 'Stop selected', action: () => selected && stopProc(selected), disabled: !selected }
+      ]
+    }]);
+    return () => setMenus(windowId, []);
+  }, [selected, setMenus, windowId]);
   }, [selected]);
 
   return (
