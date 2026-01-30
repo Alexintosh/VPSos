@@ -72,8 +72,14 @@ export const TerminalApp = ({ windowId }: { windowId: string }) => {
 
     const onResize = () => resizeAndSend();
     window.addEventListener('resize', onResize);
+    let observer: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && containerRef.current) {
+      observer = new ResizeObserver(() => resizeAndSend());
+      observer.observe(containerRef.current);
+    }
     return () => {
       window.removeEventListener('resize', onResize);
+      observer?.disconnect();
       wsRef.current?.close();
       if (ptyIdRef.current) closePtyApi(ptyIdRef.current).catch(() => {});
       term.dispose();
