@@ -6,9 +6,16 @@ import { TasksApp } from '../apps/Tasks';
 import { getAuthToken, login } from '../api/client';
 import { useState } from 'react';
 import { MenuBar } from './MenuBar';
+import { pluginRegistry, findPluginApp } from '@vpsos/plugins/registry';
+
+const PluginHost = ({ windowId, pluginAppId }: { windowId: string; pluginAppId: string }) => {
+  const app = findPluginApp(pluginAppId);
+  if (!app) return <div>Plugin app not found: {pluginAppId}</div>;
+  return app.render({ windowId, setMenus: (menus) => useUI.getState().setMenus(windowId, menus) });
+};
 
 export const App = () => {
-  const { windows, open } = useUI();
+  const { windows, open, openPlugin } = useUI();
   const [token, setToken] = useState<string>(getAuthToken() || '');
   const [authStatus, setAuthStatus] = useState<string>('');
 
@@ -39,6 +46,7 @@ export const App = () => {
           {win.app === 'terminal' && <TerminalApp windowId={win.id} />}
           {win.app === 'files' && <FileExplorer windowId={win.id} />}
           {win.app === 'tasks' && <TasksApp windowId={win.id} />}
+          {win.app === 'plugin' && win.pluginAppId && <PluginHost windowId={win.id} pluginAppId={win.pluginAppId} />}
         </Window>
       ))}
 
@@ -46,6 +54,9 @@ export const App = () => {
         <button onClick={() => open('files')}>Files</button>
         <button onClick={() => open('terminal')}>Terminal</button>
         <button onClick={() => open('tasks')}>Tasks</button>
+        {pluginRegistry.apps.filter((a) => a.dock).map((app) => (
+          <button key={app.id} onClick={() => openPlugin(app.id, app.title)}>{app.title}</button>
+        ))}
       </div>
     </div>
   );
