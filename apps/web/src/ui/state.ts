@@ -32,6 +32,8 @@ interface Store {
   windows: WindowState[];
   focusedId: string | null;
   nextZ: number;
+  gridRows: number;
+  gridCols: number;
   open(app: AppType): void;
   close(id: string): void;
   focus(id: string): void;
@@ -40,8 +42,11 @@ interface Store {
   move(id: string, x: number, y: number): void;
   resize(id: string, size: Partial<Pick<WindowState, 'w' | 'h' | 'x' | 'y'>>): void;
   setMenus(id: string, menus: MenuSection[]): void;
-  tile(id: string, layout: 'left' | 'right' | 'top' | 'bottom' | 'tl' | 'tr' | 'bl' | 'br' | 'center'): void;
+  tile(id: string, layout: TilePreset): void;
+  setGrid(rows: number, cols: number): void;
 }
+
+export type TilePreset = 'left' | 'right' | 'top' | 'bottom' | 'tl' | 'tr' | 'bl' | 'br' | 'center';
 
 let counter = 0;
 
@@ -49,6 +54,8 @@ export const useUI = create<Store>((set) => ({
   windows: [],
   focusedId: null,
   nextZ: 1,
+  gridRows: 2,
+  gridCols: 2,
   open: (app) => set((state) => {
     const id = `${app}-${++counter}`;
     const w: WindowState = {
@@ -116,26 +123,42 @@ export const useUI = create<Store>((set) => ({
     const topBar = 60;
     const width = typeof window !== 'undefined' ? window.innerWidth : 1280;
     const height = typeof window !== 'undefined' ? window.innerHeight : 720;
-    const halfW = (width - padding * 2) / 2;
-    const halfH = (height - topBar - padding * 2) / 2;
-    const full = {
-      left: padding,
-      top: topBar,
-      width: width - padding * 2,
-      height: height - topBar - padding * 2
-    };
-    const layouts = {
-      left: { x: padding, y: topBar, w: halfW, h: full.height },
-      right: { x: padding + halfW, y: topBar, w: halfW, h: full.height },
-      top: { x: padding, y: topBar, w: full.width, h: halfH },
-      bottom: { x: padding, y: topBar + halfH, w: full.width, h: halfH },
-      tl: { x: padding, y: topBar, w: halfW, h: halfH },
-      tr: { x: padding + halfW, y: topBar, w: halfW, h: halfH },
-      bl: { x: padding, y: topBar + halfH, w: halfW, h: halfH },
-      br: { x: padding + halfW, y: topBar + halfH, w: halfW, h: halfH },
-      center: full
-    } as const;
-    const preset = layouts[layout];
+    const rows = state.gridRows;
+    const cols = state.gridCols;
+    const usableW = width - padding * 2;
+    const usableH = height - topBar - padding * 2;
+    const cellW = usableW / cols;
+    const cellH = usableH / rows;
+
+    const preset = (() => {
+      const make = (row: number, col: number, rowSpan = 1, colSpan = 1) => ({
+        x: padding + col * cellW,
+        y: topBar + row * cellH,
+        w: cellW * colSpan,
+        h: cellH * rowSpan
+      });
+      switch (layout) {
+        case 'left':
+          return make(0, 0, rows, 1);
+        case 'right':
+          return make(0, cols - 1, rows, 1);
+        case 'top':
+          return make(0, 0, 1, cols);
+        case 'bottom':
+          return make(rows - 1, 0, 1, cols);
+        case 'tl':
+          return make(0, 0);
+        case 'tr':
+          return make(0, cols - 1);
+        case 'bl':
+          return make(rows - 1, 0);
+        case 'br':
+          return make(rows - 1, cols - 1);
+        case 'center':
+        default:
+          return { x: padding, y: topBar, w: usableW, h: usableH };
+      }
+    })();
     return {
       windows: state.windows.map((w) => w.id === id ? {
         ...w,
@@ -144,5 +167,6 @@ export const useUI = create<Store>((set) => ({
         minimized: false
       } : w)
     };
-  })
+  }),
+  setGrid: (rows, cols) => set((state) => ({ gridRows: rows, gridCols: cols, windows: state.windows }))
 }));
