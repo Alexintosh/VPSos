@@ -4,6 +4,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
+const apiTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:3000';
+const wsTarget = process.env.VITE_WS_PROXY_TARGET || apiTarget.replace(/^http/, 'ws');
 
 export default defineConfig({
   plugins: [react()],
@@ -18,11 +20,12 @@ export default defineConfig({
     }
   },
   server: {
+    host: true,
     port: 5173,
     proxy: {
-      '/api': 'http://localhost:3000',
+      '/api': apiTarget,
       '/ws': {
-        target: 'ws://localhost:3000',
+        target: wsTarget,
         ws: true
       }
     }
