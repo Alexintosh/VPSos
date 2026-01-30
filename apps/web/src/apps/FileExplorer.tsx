@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { FsEntry, getConfig, gitBranches, gitCheckout, gitCreateBranch, gitPull, gitPush, inspectProject, listDir, makeRun, makeTargets, nodeInstall, nodeRun, nodeScripts } from '../api/client';
 import { useTasks } from '../ui/tasksStore';
+import { useUI } from '../ui/state';
 
-export const FileExplorer = () => {
+export const FileExplorer = ({ windowId }: { windowId: string }) => {
   const [cwd, setCwd] = useState<string>('');
   const [entries, setEntries] = useState<FsEntry[]>([]);
   const [project, setProject] = useState<any>(null);
@@ -14,8 +15,9 @@ export const FileExplorer = () => {
   const [selectedScript, setSelectedScript] = useState<string>('');
   const [selectedMake, setSelectedMake] = useState<string>('');
   const tasks = useTasks();
+  const setMenus = useUI((s) => s.setMenus);
 
-  const refresh = async (path: string) => {
+  const refresh = useCallback(async (path: string) => {
     setLoading(true); setError(null);
     try {
       const l = await listDir(path);
@@ -45,7 +47,7 @@ export const FileExplorer = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const init = async () => {
@@ -55,7 +57,7 @@ export const FileExplorer = () => {
       refresh(start);
     };
     init();
-  }, []);
+  }, [refresh]);
 
   const open = (entry: FsEntry) => {
     if (entry.type === 'dir') {
@@ -64,28 +66,59 @@ export const FileExplorer = () => {
     }
   };
 
-  const goUp = () => {
+  const goUp = useCallback(() => {
     if (!cwd) return;
     const parts = cwd.split('/').filter(Boolean);
     if (parts.length === 0) return;
     const parent = '/' + parts.slice(0, -1).join('/');
     setCwd(parent || '/');
     refresh(parent || '/');
-  };
+  }, [cwd, refresh]);
 
-  const runGit = async (action: () => Promise<any>) => {
+  const runGit = useCallback(async (action: () => Promise<any>) => {
     setError(null);
     try { await action(); await refresh(cwd); } catch (e: any) { setError(e?.message || 'git failed'); }
-  };
+  }, [cwd, refresh]);
 
-  const runTask = async (label: string, fn: () => Promise<{ procId: string }>) => {
+  const runTask = useCallback(async (label: string, fn: () => Promise<{ procId: string }>) => {
     try {
       const { procId } = await fn();
       tasks.add({ id: procId, label });
     } catch (e: any) {
       setError(e?.message || 'task failed');
     }
-  };
+  }, [tasks]);
+
+  useEffect(() => {
+    const sections = [];
+    sections.push({
+      title: 'File',
+      items: [
+        { label: 'Refresh', action: () => refresh(cwd) },
+        { label: 'Up', action: () => goUp(), disabled: cwd === '/' }
+      ]
+    });
+    if (project?.git && gitData) {
+      sections.push({
+        title: 'Git',
+        items: [
+          { label: 'Pull', action: () => runGit(() => gitPull(project.git.root)) },
+          { label: 'Push', action: () => runGit(() => gitPush(project.git.root)) }
+        ]
+      });
+    }
+    if (project?.node && nodeData) {
+      sections.push({
+        title: 'Run',
+        items: [
+          { label: 'Install deps', action: () => runTask(`install:${project.node.root}`, () => nodeInstall(project.node.root)) },
+          ...nodeData.scripts.map((s) => ({ label: `Run ${s}`, action: () => runTask(`script:${s}`, () => nodeRun(project.node.root, s)) }))
+        ]
+      });
+    }
+    setMenus(windowId, sections);
+    return () => setMenus(windowId, []);
+  }, [cwd, gitData, nodeData, project, runGit, runTask, setMenus, windowId, goUp, refresh]);
 
   return (
     <div className="flex-col" style={{ height: '100%' }}>
