@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "../..",
+    "outDir": "dist",
+    "composite": false,
+    "paths": {
+      "@devos/shared": ["../../packages/shared/src"]
+    }
+  },
+  "include": ["src"]
+}

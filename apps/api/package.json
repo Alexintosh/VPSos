@@ -1,0 +1,19 @@
+{
+  "name": "@devos/api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "start": "bun run src/index.ts",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@devos/shared": "workspace:*",
+    "elysia": "^1.0.17",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

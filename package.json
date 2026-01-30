@@ -1,0 +1,17 @@
+{
+  "name": "devos",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "bun --filter @devos/api dev",
+    "dev:web": "bun --filter @devos/web dev",
+    "lint": "bun --filter ./... run check"
+  },
+  "devDependencies": {
+    "bun-types": "^1.3.8"
+  }
+}

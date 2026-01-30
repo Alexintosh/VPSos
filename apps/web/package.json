@@ -1,0 +1,27 @@
+{
+  "name": "@devos/web",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zustand": "^4.5.2",
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.2",
+    "@types/react": "^18.2.61",
+    "@types/react-dom": "^18.2.19",
+    "@devos/shared": "workspace:*",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.0"
+  }
+}
