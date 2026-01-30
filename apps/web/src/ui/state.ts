@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { ReactNode } from 'react';
 
 export type AppType = 'terminal' | 'files' | 'tasks' | 'plugin';
 
@@ -6,6 +7,7 @@ export interface MenuItem {
   label: string;
   action?: () => void;
   disabled?: boolean;
+  icon?: ReactNode;
 }
 
 export interface MenuSection {

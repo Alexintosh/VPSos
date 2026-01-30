@@ -1,12 +1,62 @@
-import { useState } from 'react';
+import { CSSProperties, useMemo, useState } from 'react';
 import { MenuSection, useUI } from './state';
 
-const baseMenus = (hasWindow: boolean, tile: (layout: any) => void, gridRows: number, setGrid: (rows: number, cols: number) => void) => {
+type IconStyle = CSSProperties & {
+  ['--tile-left']?: string;
+  ['--tile-top']?: string;
+  ['--tile-width']?: string;
+  ['--tile-height']?: string;
+};
+
+const TileIcon = ({ left, top, width, height }: { left: number; top: number; width: number; height: number }) => (
+  <span
+    className="menu-icon"
+    style={{
+      '--tile-left': `${left}%`,
+      '--tile-top': `${top}%`,
+      '--tile-width': `${width}%`,
+      '--tile-height': `${height}%`
+    } as IconStyle}
+  />
+);
+
+const GridIcon = ({ rows, cols }: { rows: number; cols: number }) => {
+  const style: CSSProperties = {
+    backgroundImage: `linear-gradient(90deg, rgba(255,255,255,0.25) 0, rgba(255,255,255,0.25) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(255,255,255,0.25) 0, rgba(255,255,255,0.25) 1px, transparent 1px)`,
+    backgroundSize: `${100 / cols}% 100%, 100% ${100 / rows}%`,
+    backgroundRepeat: 'repeat'
+  };
+  return <span className="menu-icon grid" style={style} />;
+};
+
+const buildMenus = (
+  hasWindow: boolean,
+  tile: (layout: any) => void,
+  gridRows: number,
+  setGrid: (rows: number, cols: number) => void,
+  toggleMax: (id: string) => void,
+  focusedId?: string | null
+) => {
+  const windowItems = [
+    { label: 'Center', action: () => hasWindow && tile('center'), icon: <TileIcon left={15} top={15} width={70} height={70} /> },
+    { label: 'Fullscreen', action: () => hasWindow && focusedId && toggleMax(focusedId), icon: <TileIcon left={0} top={0} width={100} height={100} /> },
+    { label: 'Half Left', action: () => hasWindow && tile('left'), icon: <TileIcon left={0} top={0} width={50} height={100} /> },
+    { label: 'Half Right', action: () => hasWindow && tile('right'), icon: <TileIcon left={50} top={0} width={50} height={100} /> },
+    { label: 'Half Top', action: () => hasWindow && tile('top'), icon: <TileIcon left={0} top={0} width={100} height={50} /> },
+    { label: 'Half Bottom', action: () => hasWindow && tile('bottom'), icon: <TileIcon left={0} top={50} width={100} height={50} /> },
+    { label: 'Upper Left', action: () => hasWindow && tile('tl'), icon: <TileIcon left={0} top={0} width={50} height={50} /> },
+    { label: 'Upper Right', action: () => hasWindow && tile('tr'), icon: <TileIcon left={50} top={0} width={50} height={50} /> },
+    { label: 'Lower Left', action: () => hasWindow && tile('bl'), icon: <TileIcon left={0} top={50} width={50} height={50} /> },
+    { label: 'Lower Right', action: () => hasWindow && tile('br'), icon: <TileIcon left={50} top={50} width={50} height={50} /> }
+  ].map((item) => ({ ...item, disabled: !hasWindow }));
+
   const gridOptions = [
-    { label: '4-cell (2x2)', rows: 2, cols: 2 },
-    { label: '6-cell (3x2)', rows: 3, cols: 2 },
-    { label: '8-cell (4x2)', rows: 4, cols: 2 }
+    { label: '4-cell (2×2)', rows: 2, cols: 2 },
+    { label: '6-cell (3×2)', rows: 3, cols: 2 },
+    { label: '8-cell (4×2)', rows: 4, cols: 2 }
   ];
+
   return [
     {
       title: 'DevOS',
@@ -14,38 +64,32 @@ const baseMenus = (hasWindow: boolean, tile: (layout: any) => void, gridRows: nu
     },
     {
       title: 'Window',
-      items: [
-        { label: 'Tile Left Half', action: () => hasWindow && tile('left'), disabled: !hasWindow },
-        { label: 'Tile Right Half', action: () => hasWindow && tile('right'), disabled: !hasWindow },
-        { label: 'Tile Top Half', action: () => hasWindow && tile('top'), disabled: !hasWindow },
-        { label: 'Tile Bottom Half', action: () => hasWindow && tile('bottom'), disabled: !hasWindow },
-        { label: 'Tile Top Left', action: () => hasWindow && tile('tl'), disabled: !hasWindow },
-        { label: 'Tile Top Right', action: () => hasWindow && tile('tr'), disabled: !hasWindow },
-        { label: 'Tile Bottom Left', action: () => hasWindow && tile('bl'), disabled: !hasWindow },
-        { label: 'Tile Bottom Right', action: () => hasWindow && tile('br'), disabled: !hasWindow },
-        { label: 'Tile Center', action: () => hasWindow && tile('center'), disabled: !hasWindow }
-      ]
+      items: windowItems
     },
     {
       title: 'Layout',
       items: gridOptions.map((opt) => ({
         label: `${opt.label}${gridRows === opt.rows ? ' ✓' : ''}`,
-        action: () => setGrid(opt.rows, opt.cols)
+        action: () => setGrid(opt.rows, opt.cols),
+        icon: <GridIcon rows={opt.rows} cols={opt.cols} />
       }))
     }
   ] satisfies MenuSection[];
 };
 
 export const MenuBar = () => {
-  const { windows, focusedId, tile, gridRows, setGrid } = useUI();
+  const { windows, focusedId, tile, gridRows, setGrid, toggleMax } = useUI();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const focused = windows.find((w) => w.id === focusedId);
-  const sections: MenuSection[] = [
-    ...baseMenus(!!focused, (layout: string) => {
-      if (focused) tile(focused.id, layout as any);
-    }, gridRows, setGrid)
-  ];
-  if (focused?.menus?.length) sections.push(...focused.menus);
+  const baseSections: MenuSection[] = useMemo(() => buildMenus(
+    !!focused,
+    (layout: string) => focused && tile(focused.id, layout as any),
+    gridRows,
+    setGrid,
+    (id) => toggleMax(id),
+    focused?.id
+  ), [focused, gridRows, setGrid, tile, toggleMax]);
+  const sections = focused?.menus?.length ? [...baseSections, ...focused.menus] : baseSections;
 
   const toggle = (title: string) => {
     setOpenMenu((prev) => (prev === title ? null : title));
@@ -67,7 +111,8 @@ export const MenuBar = () => {
                     setOpenMenu(null);
                   }}
                 >
-                  {item.label}
+                  {item.icon}
+                  <span>{item.label}</span>
                 </button>
               ))}
             </div>
