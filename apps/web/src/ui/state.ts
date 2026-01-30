@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type AppType = 'terminal' | 'files' | 'tasks';
+export type AppType = 'terminal' | 'files' | 'tasks' | 'plugin';
 
 export interface MenuItem {
   label: string;
@@ -17,6 +17,7 @@ export interface WindowState {
   id: string;
   app: AppType;
   title: string;
+  pluginAppId?: string;
   x: number;
   y: number;
   w: number;
@@ -35,6 +36,7 @@ interface Store {
   gridRows: number;
   gridCols: number;
   open(app: AppType): void;
+  openPlugin(pluginAppId: string, title: string): void;
   close(id: string): void;
   focus(id: string): void;
   minimize(id: string): void;
@@ -66,6 +68,24 @@ export const useUI = create<Store>((set) => ({
       y: 80 + state.windows.length * 20,
       w: 640,
       h: 420,
+      z: state.nextZ,
+      minimized: false,
+      maximized: false,
+      menus: []
+    };
+    return { windows: [...state.windows, w], nextZ: state.nextZ + 1, focusedId: id };
+  }),
+  openPlugin: (pluginAppId, title) => set((state) => {
+    const id = `plugin-${++counter}`;
+    const w: WindowState = {
+      id,
+      app: 'plugin',
+      pluginAppId,
+      title,
+      x: 80 + state.windows.length * 20,
+      y: 80 + state.windows.length * 20,
+      w: 720,
+      h: 480,
       z: state.nextZ,
       minimized: false,
       maximized: false,
