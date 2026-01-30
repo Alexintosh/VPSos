@@ -1,20 +1,32 @@
 import { useUI } from './state';
 import { Window } from './Window';
-
-const Placeholder = ({ label }: { label: string }) => (
-  <div>{label} coming soon.</div>
-);
+import { TerminalApp } from '../apps/Terminal';
+import { FileExplorer } from '../apps/FileExplorer';
+import { TasksApp } from '../apps/Tasks';
+import { getAuthToken, setAuthToken } from '../api/client';
+import { useState } from 'react';
 
 export const App = () => {
   const { windows, open } = useUI();
+  const [token, setToken] = useState<string>(getAuthToken() || '');
+
+  const saveToken = () => setAuthToken(token.trim());
 
   return (
     <div className="desktop">
+      <div className="topbar">
+        <div>Dev OS</div>
+        <div className="row gap">
+          <input value={token} onChange={(e) => setToken(e.target.value)} placeholder="auth token" />
+          <button onClick={saveToken}>Save token</button>
+        </div>
+      </div>
+
       {windows.map((win) => (
         <Window key={win.id} win={win}>
-          {win.app === 'terminal' && <Placeholder label="Terminal" />}
-          {win.app === 'files' && <Placeholder label="File Explorer" />}
-          {win.app === 'tasks' && <Placeholder label="Task Viewer" />}
+          {win.app === 'terminal' && <TerminalApp />}
+          {win.app === 'files' && <FileExplorer />}
+          {win.app === 'tasks' && <TasksApp />}
         </Window>
       ))}
 
