@@ -24,6 +24,12 @@ const onExit = (entry: PtyEntry, code: number) => {
   ptys.delete(entry.id);
 };
 
+const versionOk = () => {
+  const v = Bun.version.split('.').map((n) => parseInt(n, 10));
+  const [maj, min, patch] = [v[0] || 0, v[1] || 0, v[2] || 0];
+  return maj > 1 || (maj === 1 && (min > 3 || (min === 3 && patch >= 5)));
+};
+
 export interface OpenPtyInput {
   cwd?: string;
   cols: number;
@@ -31,13 +37,12 @@ export interface OpenPtyInput {
 }
 
 export const openPty = async (input: OpenPtyInput) => {
+  if (!versionOk()) throw new Error('Bun 1.3.5+ required for PTY support');
   if (ptys.size >= config.MAX_PTY) throw new Error('pty limit reached');
   const id = randomUUID();
   const cwd = input.cwd ? await enforceSandbox(input.cwd) : config.DEFAULT_CWD;
   const proc = spawn([config.DEFAULT_SHELL], {
     cwd,
-    stdin: 'pipe',
-    stdout: 'pipe',
     terminal: {
       cols: input.cols,
       rows: input.rows,

@@ -30,26 +30,30 @@ export const TerminalApp = () => {
     };
 
     const start = async () => {
-      const cols = term.cols;
-      const rows = term.rows;
-      const { ptyId } = await openPty('.', cols, rows);
-      ptyIdRef.current = ptyId;
-      const ws = openPtySocket(ptyId);
-      wsRef.current = ws;
-      ws.binaryType = 'arraybuffer';
-      ws.onmessage = (ev) => {
-        if (typeof ev.data === 'string') {
-          try {
-            const msg = JSON.parse(ev.data);
-            if (msg.t === 'exit') term.writeln(`\r\n[pty exited ${msg.code}]`);
-          } catch {}
-        } else {
-          const data = new Uint8Array(ev.data as ArrayBuffer);
-          term.write(data);
-        }
-      };
-      term.onData((data) => ws.send(new TextEncoder().encode(data)));
-      resizeAndSend();
+      try {
+        const cols = term.cols;
+        const rows = term.rows;
+        const { ptyId } = await openPty('.', cols, rows);
+        ptyIdRef.current = ptyId;
+        const ws = openPtySocket(ptyId);
+        wsRef.current = ws;
+        ws.binaryType = 'arraybuffer';
+        ws.onmessage = (ev) => {
+          if (typeof ev.data === 'string') {
+            try {
+              const msg = JSON.parse(ev.data);
+              if (msg.t === 'exit') term.writeln(`\r\n[pty exited ${msg.code}]`);
+            } catch {}
+          } else {
+            const data = new Uint8Array(ev.data as ArrayBuffer);
+            term.write(data);
+          }
+        };
+        term.onData((data) => ws.send(new TextEncoder().encode(data)));
+        resizeAndSend();
+      } catch (e: any) {
+        term.writeln(`PTY error: ${e?.message || e}`);
+      }
     };
     start();
 
