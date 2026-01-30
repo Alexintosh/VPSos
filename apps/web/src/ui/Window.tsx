@@ -69,7 +69,7 @@ export const Window = ({ win, children }: PropsWithChildren<{ win: WindowState }
     dragState.current = { offsetX: e.clientX - win.x, offsetY: e.clientY - win.y };
   };
 
-  const startResize = (dir: ResizeDir) => (e: React.PointerEvent) => {
+  const startResize = (dir: ResizeDir) => (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
     resizeState.current = {
@@ -107,7 +107,7 @@ export const Window = ({ win, children }: PropsWithChildren<{ win: WindowState }
       </div>
       <div className="content" style={{ display: win.minimized ? 'none' : 'flex' }}>{children}</div>
       {['n','s','e','w','ne','nw','se','sw'].map((dir) => (
-        <div key={dir} className={`resize-handle ${dir}`} onPointerDown={startResize(dir as ResizeDir)} />
+        <div key={dir} className={`resize-handle ${dir}`} onMouseDown={startResize(dir as ResizeDir)} />
       ))}
     </div>
   );
