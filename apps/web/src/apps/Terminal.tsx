@@ -17,11 +17,13 @@ export const TerminalApp = () => {
     term.loadAddon(fit);
     termRef.current = term;
     fitRef.current = fit;
-    if (containerRef.current) term.open(containerRef.current);
+    if (containerRef.current) {
+      term.open(containerRef.current);
+      fit.fit();
+    }
     const resizeAndSend = () => {
       if (!fitRef.current || !ptyIdRef.current) return;
       fitRef.current.fit();
-      const dims = termRef.current?.buffer.active.getLine(0);
       const cols = termRef.current?.cols || 80;
       const rows = termRef.current?.rows || 24;
       resizePtyApi(ptyIdRef.current, cols, rows).catch(() => {});

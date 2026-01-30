@@ -28,6 +28,17 @@ const api = async <T>(path: string, init?: RequestInit): Promise<T> => {
 
 export const getConfig = () => api<{ fsSandbox: string; fsRoot?: string; defaultCwd: string }>(`/config`);
 
+export const login = async (token: string) => {
+  const res = await fetch(`${API_BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token })
+  });
+  if (!res.ok) throw new Error(await res.text() || 'auth failed');
+  setAuthToken(token);
+  return res.json();
+};
+
 export interface FsEntry { name: string; path: string; type: 'file' | 'dir' | 'link'; size?: number; mtime?: number; }
 
 export const listDir = (path: string) => api<{ path: string; entries: FsEntry[] }>(`/fs/list?path=${encodeURIComponent(path)}`);

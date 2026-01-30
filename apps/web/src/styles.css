@@ -35,6 +35,7 @@ html, body, #root { margin: 0; padding: 0; width: 100%; height: 100%; background
 
 .topbar input { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); color: var(--text); padding: 6px 8px; border-radius: 6px; }
 .topbar button { padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.08); color: var(--text); cursor: pointer; }
+.muted { color: var(--muted); font-size: 12px; }
 
 .dock {
   position: absolute;
@@ -70,8 +71,12 @@ html, body, #root { margin: 0; padding: 0; width: 100%; height: 100%; background
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  top: 60px;
+  min-width: 320px;
+  min-height: 200px;
 }
+
+.window.minimized { height: 44px !important; }
+.window.maximized { left: 8px !important; top: 52px !important; width: calc(100% - 16px) !important; height: calc(100% - 72px) !important; }
 
 .titlebar {
   height: 36px;
@@ -88,7 +93,7 @@ html, body, #root { margin: 0; padding: 0; width: 100%; height: 100%; background
 .traffic .min { background: #febc2e; }
 .traffic .max { background: #28c840; }
 
-.content { flex: 1; padding: 12px; overflow: auto; }
+.content { flex: 1; padding: 12px; overflow: auto; min-height: 0; display: flex; flex-direction: column; }
 
 .toolbar { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
 .toolbar .path { font-family: monospace; color: var(--muted); }

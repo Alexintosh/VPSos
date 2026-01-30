@@ -11,6 +11,8 @@ export const FileExplorer = () => {
   const [gitData, setGitData] = useState<{ branches: string[]; current: string } | null>(null);
   const [nodeData, setNodeData] = useState<{ pm: string; scripts: string[] } | null>(null);
   const [makeData, setMakeData] = useState<string[] | null>(null);
+  const [selectedScript, setSelectedScript] = useState<string>('');
+  const [selectedMake, setSelectedMake] = useState<string>('');
   const tasks = useTasks();
 
   const refresh = async (path: string) => {
@@ -27,11 +29,13 @@ export const FileExplorer = () => {
       if (info.node) {
         const ns = await nodeScripts(info.node.root);
         setNodeData({ pm: ns.packageManager, scripts: ns.scripts });
+        setSelectedScript(ns.scripts[0] || '');
       } else setNodeData(null);
       if (info.make) {
         try {
           const mt = await makeTargets(info.make.root);
           setMakeData(mt.targets);
+          setSelectedMake(mt.targets[0] || '');
         } catch {
           setMakeData([]);
         }
@@ -119,13 +123,11 @@ export const FileExplorer = () => {
           <div className="panel-title">Node ({nodeData.pm})</div>
           <div className="row gap">
             <button onClick={() => runTask(`install:${project.node.root}`, () => nodeInstall(project.node.root))}>Install</button>
-            <select id="script-select">
+            <select value={selectedScript} onChange={(e) => setSelectedScript(e.target.value)}>
               {nodeData.scripts.map((s) => <option key={s}>{s}</option>)}
             </select>
             <button onClick={() => {
-              const select = document.getElementById('script-select') as HTMLSelectElement;
-              const script = select?.value;
-              if (script) runTask(`script:${script}`, () => nodeRun(project.node.root, script));
+              if (selectedScript) runTask(`script:${selectedScript}`, () => nodeRun(project.node.root, selectedScript));
             }}>Run</button>
           </div>
         </div>
@@ -135,13 +137,12 @@ export const FileExplorer = () => {
         <div className="panel">
           <div className="panel-title">Make</div>
           <div className="row gap">
-            <select id="make-select">
+            <select value={selectedMake} onChange={(e) => setSelectedMake(e.target.value)}>
               <option value="">(default)</option>
               {makeData.map((t) => <option key={t}>{t}</option>)}
             </select>
             <button onClick={() => {
-              const select = document.getElementById('make-select') as HTMLSelectElement;
-              const target = select?.value || undefined;
+              const target = selectedMake || undefined;
               runTask(`make:${target || 'default'}`, () => makeRun(project.make.root, target));
             }}>Run</button>
           </div>
