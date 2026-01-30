@@ -376,6 +376,11 @@ body,
   background: rgba(255, 255, 255, 0.06);
 }
 
+.entry.active {
+  background: rgba(59, 130, 246, 0.22);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
 .error {
   color: #f87171;
   margin-bottom: 8px;
