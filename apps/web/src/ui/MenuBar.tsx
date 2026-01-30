@@ -1,4 +1,4 @@
-import { CSSProperties, useMemo, useState } from 'react';
+import { CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import { MenuSection, useUI } from './state';
 
 type IconStyle = CSSProperties & {
@@ -80,7 +80,18 @@ const buildMenus = (
 export const MenuBar = () => {
   const { windows, focusedId, tile, gridRows, setGrid, toggleMax } = useUI();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const menubarRef = useRef<HTMLDivElement | null>(null);
   const focused = windows.find((w) => w.id === focusedId);
+  useEffect(() => {
+    if (!openMenu) return;
+    const handler = (ev: MouseEvent) => {
+      if (!menubarRef.current) return;
+      if (menubarRef.current.contains(ev.target as Node)) return;
+      setOpenMenu(null);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [openMenu]);
   const baseSections: MenuSection[] = useMemo(() => buildMenus(
     !!focused,
     (layout: string) => focused && tile(focused.id, layout as any),
@@ -96,7 +107,7 @@ export const MenuBar = () => {
   };
 
   return (
-    <div className="menubar">
+    <div className="menubar" ref={menubarRef}>
       {sections.map((section) => (
         <div key={section.title} className={`menu ${openMenu === section.title ? 'open' : ''}`}>
           <button onClick={() => toggle(section.title)}>{section.title}</button>
