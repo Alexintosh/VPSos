@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package.json bun.lock bunfig.toml tsconfig.base.json ./
 COPY packages ./packages
-COPY apps/web ./apps/web
+COPY apps ./apps
 
 RUN bun install
 
