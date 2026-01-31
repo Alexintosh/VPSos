@@ -6,7 +6,7 @@ COPY package.json bun.lock bunfig.toml tsconfig.base.json ./
 COPY packages ./packages
 COPY apps/api ./apps/api
 
-RUN bun install --frozen-lockfile
+RUN bun install
 
 EXPOSE 3000
 
