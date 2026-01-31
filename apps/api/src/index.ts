@@ -30,6 +30,7 @@ const app = new Elysia({ prefix: '' })
   .use(makeRoutes)
   .use(procRoutes)
   .use(ptyRoutes)
-  .listen(config.PORT);
+  .listen({ port: config.PORT, hostname: config.HOST });
 
-console.log(`api listening on http://localhost:${config.PORT}`);
+const hostForLog = config.HOST === '0.0.0.0' ? 'localhost' : config.HOST;
+console.log(`api listening on http://${hostForLog}:${config.PORT}`);

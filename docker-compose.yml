@@ -1,0 +1,31 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      AUTH_TOKEN: ${AUTH_TOKEN:-changeme}
+      AUTH_MODE: ${AUTH_MODE:-token}
+      HOST: 0.0.0.0
+      PORT: 3000
+      FS_SANDBOX: "on"
+      FS_ROOT: /data
+      DEFAULT_CWD: /data
+      DEFAULT_SHELL: ${DEFAULT_SHELL:-/bin/bash}
+      ALLOW_RUN_AS_ROOT: ${ALLOW_RUN_AS_ROOT:-false}
+    volumes:
+      - ./:/data
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_PROXY_TARGET: http://api:3000
+      VITE_WS_PROXY_TARGET: ws://api:3000
+    depends_on:
+      - api
