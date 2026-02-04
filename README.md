@@ -34,6 +34,46 @@ make web
 
 5) In the web UI, paste the AUTH_TOKEN in the top bar before using File Explorer/Terminal/Tasks.
 
+## Docker
+
+Run the full stack with Docker Compose:
+
+```bash
+# Copy and edit environment variables
+cp .env.example .env
+# Edit .env to set AUTH_TOKEN and other options
+
+# Build and start services
+docker compose up --build
+
+# Or run detached
+docker compose up -d --build
+```
+
+Services:
+- API: http://localhost:3000
+- Web UI: http://localhost:5173
+
+### Docker configuration
+
+The container has sandbox mode enabled by default (`FS_SANDBOX=on`). If you need full filesystem access (e.g., to access system directories outside `/data`), disable it in your `.env`:
+
+```bash
+FS_SANDBOX=off
+```
+
+Then restart the containers.
+
+### Rebuilding after code changes
+
+Code is baked into the image at build time. After making changes, rebuild and restart:
+
+```bash
+docker compose up --build
+```
+
+For faster development, run natively with `make api` and `make web` instead.
+
 ## Useful commands
 
 ```bash

@@ -10,7 +10,7 @@ services:
       AUTH_MODE: ${AUTH_MODE:-token}
       HOST: 0.0.0.0
       PORT: 3000
-      FS_SANDBOX: "on"
+      FS_SANDBOX: ${FS_SANDBOX:-on}
       FS_ROOT: /data
       DEFAULT_CWD: /data
       DEFAULT_SHELL: ${DEFAULT_SHELL:-/bin/bash}
