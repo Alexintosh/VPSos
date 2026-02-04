@@ -53,4 +53,13 @@ export const gitRoutes = new Elysia({ name: 'git' })
     const res = await spawnText('git', ['push', remote], repoPath);
     set.status = res.ok ? 200 : 400;
     return res.ok ? { ok: true } : { error: res.stderr || 'push failed' };
-  }, { body: t.Object({ repoPath: t.String(), remote: t.Optional(t.String()) }) });
+  }, { body: t.Object({ repoPath: t.String(), remote: t.Optional(t.String()) }) })
+
+  .post('/api/git/clone', async ({ body, set }) => {
+    const cwd = await enforceSandbox(body.cwd);
+    const args = ['clone', body.url];
+    if (body.dir) args.push(body.dir);
+    const res = await spawnText('git', args, cwd);
+    set.status = res.ok ? 200 : 400;
+    return res.ok ? { ok: true } : { error: res.stderr || 'clone failed' };
+  }, { body: t.Object({ cwd: t.String(), url: t.String(), dir: t.Optional(t.String()) }) });

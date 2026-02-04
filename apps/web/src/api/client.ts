@@ -51,6 +51,7 @@ export const gitCheckout = (repoPath: string, branch: string) => api(`/git/check
 export const gitCreateBranch = (repoPath: string, name: string, from?: string) => api(`/git/create-branch`, { method: 'POST', body: JSON.stringify({ repoPath, name, from }), headers: { 'Content-Type': 'application/json' } });
 export const gitPull = (repoPath: string) => api(`/git/pull`, { method: 'POST', body: JSON.stringify({ repoPath }), headers: { 'Content-Type': 'application/json' } });
 export const gitPush = (repoPath: string) => api(`/git/push`, { method: 'POST', body: JSON.stringify({ repoPath }), headers: { 'Content-Type': 'application/json' } });
+export const gitClone = (cwd: string, url: string, dir?: string) => api(`/git/clone`, { method: 'POST', body: JSON.stringify({ cwd, url, dir }), headers: { 'Content-Type': 'application/json' } });
 
 export const nodeScripts = (projectPath: string) => api<{ packageManager: PackageManager; scripts: string[] }>(`/node/scripts`, { method: 'POST', body: JSON.stringify({ projectPath }), headers: { 'Content-Type': 'application/json' } });
 export const nodeInstall = (projectPath: string) => api<{ procId: string }>(`/node/install`, { method: 'POST', body: JSON.stringify({ projectPath }), headers: { 'Content-Type': 'application/json' } });
