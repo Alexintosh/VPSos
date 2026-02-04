@@ -34,6 +34,51 @@
 
 Keep this document updated when workflows or commands change.
 
+## Build Pipeline
+
+The project includes a build pipeline to create standalone executables:
+
+```bash
+# Full build (web + API + package)
+make build
+# or
+bun run build
+
+# Individual steps
+make build-web      # Build web frontend only
+make build-api      # Compile API executable only
+make clean-dist     # Clean dist directory
+```
+
+### Build Output
+
+```
+dist/
+├── vpsos/              # Full release package
+│   ├── vpsos          # Bash launcher script
+│   ├── vpsos.bat      # Windows launcher
+│   ├── vpsos-api      # Compiled API executable
+│   ├── web/           # Static web assets
+│   └── README.txt
+├── vpsos-api          # Standalone API executable
+└── web/               # Static web assets
+```
+
+### Running the Executable
+
+```bash
+# From the package
+cd dist/vpsos
+./vpsos
+
+# With custom config
+AUTH_TOKEN=secret ./vpsos
+
+# Or use .env file
+cp .env.example dist/vpsos/.env
+./vpsos
+```
+
 ## Common Pitfalls / Agent Learnings
 
 ### React StrictMode Double-Mounting

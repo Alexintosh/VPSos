@@ -1,4 +1,20 @@
-.PHONY: api web check env docker-dev
+.PHONY: api web check env docker-dev build build-web build-api clean-dist
+
+# Build everything (web + API executable)
+build:
+	bun run scripts/build.ts all
+
+# Build web only
+build-web:
+	bun run scripts/build.ts web
+
+# Build API executable only
+build-api:
+	bun run scripts/build.ts api
+
+# Clean dist directory
+clean-dist:
+	rm -rf dist
 
 # Load .env (if present) and run API
 api:

@@ -1,7 +1,12 @@
 import { z } from 'zod';
 
+// Allow empty AUTH_TOKEN for development/executable builds
+const authTokenSchema = process.env.AUTH_TOKEN 
+  ? z.string().min(1)
+  : z.string().default('');
+
 const configSchema = z.object({
-  AUTH_TOKEN: z.string().min(1),
+  AUTH_TOKEN: authTokenSchema,
   AUTH_MODE: z.enum(['token']).default('token'),
   FS_SANDBOX: z.enum(['on', 'off']).default('on'),
   FS_ROOT: z.string().default('/'),
@@ -20,3 +25,9 @@ const configSchema = z.object({
 
 export const config = configSchema.parse(process.env);
 export type AppConfig = typeof config;
+
+// Warn if using empty AUTH_TOKEN
+if (!config.AUTH_TOKEN) {
+  console.log('⚠️  Warning: AUTH_TOKEN not set. Using empty token (insecure for production).');
+  console.log('   Set AUTH_TOKEN environment variable for security.');
+}
