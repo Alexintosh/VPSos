@@ -1,8 +1,8 @@
-# VPSos (VPS web-native workspace)
+# VPSos (web-native workspace)
 
-Single-user web desktop makes working on your VPS feel like a desktop OS, featuring sandboxed FS, PTY terminal, and smart Git/Node/Make toolbars.
+Single-user web desktop, makes working on your VPS feel familiar. Inspired by the classic desktop experience on mac, it allows to execute common tasks you'd normally do on the terminal. Git is integrated into the file explorer, you'll also find convinient way to run your project (w/ Makefile/bun/pnpm). You can multiple terminals, handle processes, logs, etc. Tiling system and sandboxed FS included.
 
-🌐 **Website**: [alexintosh.github.io/vpsos](https://alexintosh.github.io/vpsos)
+<img src="https://raw.githubusercontent.com/Alexintosh/VPSos/refs/heads/main/docs/screen1.png" />
 
 ## Quickstart
 
