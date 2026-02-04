@@ -208,10 +208,10 @@ body,
 }
 
 .window.maximized {
-  left: 8px !important;
-  top: 52px !important;
-  width: calc(100% - 16px) !important;
-  height: calc(100% - 72px) !important;
+  left: 0 !important;
+  top: 44px !important;
+  width: 100% !important;
+  height: calc(100% - 44px) !important;
 }
 
 .resize-handle {

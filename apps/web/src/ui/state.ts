@@ -124,7 +124,8 @@ export const useUI = create<Store>((set) => ({
         return { ...w, maximized: false };
       }
       const prev = { x: w.x, y: w.y, w: w.w, h: w.h };
-      const padding = 16;
+      const padding = 0;
+      const topBar = 44;
       const width = typeof window !== 'undefined' ? window.innerWidth : 1280;
       const height = typeof window !== 'undefined' ? window.innerHeight : 720;
       return {
@@ -133,9 +134,9 @@ export const useUI = create<Store>((set) => ({
         minimized: false,
         prev,
         x: padding,
-        y: 52,
+        y: topBar,
         w: width - padding * 2,
-        h: height - padding * 2 - 60
+        h: height - topBar - padding
       };
     })
   })),
@@ -149,8 +150,8 @@ export const useUI = create<Store>((set) => ({
     windows: state.windows.map((w) => w.id === id ? { ...w, menus } : w)
   })),
   tile: (id, layout) => set((state) => {
-    const padding = 12;
-    const topBar = 60;
+    const padding = 0;
+    const topBar = 44;
     const width = typeof window !== 'undefined' ? window.innerWidth : 1280;
     const height = typeof window !== 'undefined' ? window.innerHeight : 720;
     const rows = state.gridRows;
