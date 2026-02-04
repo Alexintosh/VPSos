@@ -1,8 +1,10 @@
 import { Elysia, t } from 'elysia';
-import { openPty, resizePty, closePty, attachPtySocket, writePty } from '../services/pty';
+import { openPty, resizePty, closePty, attachPtySocket, writePty, getPtyCount, listPtys, killAllPtys } from '../services/pty';
 import { enforceSandbox } from '../utils/path';
 
 export const ptyRoutes = new Elysia({ name: 'pty' })
+  .get('/api/pty/list', () => ({ count: getPtyCount(), ptys: listPtys() }))
+  .post('/api/pty/kill-all', () => { killAllPtys(); return { ok: true }; })
   .post('/api/pty/open', async ({ body }) => {
     const cwd = body.cwd ? await enforceSandbox(body.cwd) : undefined;
     const id = await openPty({ cwd, cols: body.cols, rows: body.rows });

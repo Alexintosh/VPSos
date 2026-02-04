@@ -12,6 +12,9 @@ export const TerminalApp = ({ windowId }: { windowId: string }) => {
   const fitRef = useRef<FitAddon | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const setMenus = useUI((s) => s.setMenus);
+  const win = useUI((s) => s.windows.find((w) => w.id === windowId));
+  const initialCommand = win?.data?.initialCommand;
+  const autoRun = win?.data?.autoRun;
 
   useEffect(() => {
     setMenus(windowId, [{
@@ -56,6 +59,13 @@ export const TerminalApp = ({ windowId }: { windowId: string }) => {
           setTimeout(() => {
             resizeAndSend();
             term.focus();
+            // Type initial command if provided
+            if (initialCommand && ws.readyState === WebSocket.OPEN) {
+              ws.send(new TextEncoder().encode(initialCommand));
+              if (autoRun) {
+                ws.send(new TextEncoder().encode('\r'));
+              }
+            }
           }, 50);
         };
         ws.onmessage = (ev) => {

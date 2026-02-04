@@ -15,6 +15,7 @@ services:
       DEFAULT_CWD: /data
       DEFAULT_SHELL: ${DEFAULT_SHELL:-/bin/bash}
       ALLOW_RUN_AS_ROOT: ${ALLOW_RUN_AS_ROOT:-false}
+      MAX_PTY: ${MAX_PTY:-16}
     volumes:
       - ./:/data
 

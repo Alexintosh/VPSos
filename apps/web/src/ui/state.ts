@@ -15,6 +15,12 @@ export interface MenuSection {
   items: MenuItem[];
 }
 
+export interface WindowData {
+  initialCommand?: string;
+  autoRun?: boolean;
+  cwd?: string;
+}
+
 export interface WindowState {
   id: string;
   app: AppType;
@@ -29,6 +35,7 @@ export interface WindowState {
   maximized: boolean;
   prev?: { x: number; y: number; w: number; h: number };
   menus?: MenuSection[];
+  data?: WindowData;
 }
 
 interface Store {
@@ -37,7 +44,7 @@ interface Store {
   nextZ: number;
   gridRows: number;
   gridCols: number;
-  open(app: AppType): void;
+  open(app: AppType, data?: WindowData): void;
   openPlugin(pluginAppId: string, title: string): void;
   close(id: string): void;
   focus(id: string): void;
@@ -60,7 +67,7 @@ export const useUI = create<Store>((set) => ({
   nextZ: 1,
   gridRows: 2,
   gridCols: 2,
-  open: (app) => set((state) => {
+  open: (app, data) => set((state) => {
     const id = `${app}-${++counter}`;
     const w: WindowState = {
       id,
@@ -73,7 +80,8 @@ export const useUI = create<Store>((set) => ({
       z: state.nextZ,
       minimized: false,
       maximized: false,
-      menus: []
+      menus: [],
+      data
     };
     return { windows: [...state.windows, w], nextZ: state.nextZ + 1, focusedId: id };
   }),

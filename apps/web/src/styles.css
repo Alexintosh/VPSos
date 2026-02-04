@@ -184,6 +184,12 @@ body,
   background: rgba(255, 255, 255, 0.08);
 }
 
+.dock-divider {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 4px 4px;
+}
+
 .window {
   position: absolute;
   background: var(--panel);
