@@ -3,6 +3,7 @@ import { Window } from './Window';
 import { TerminalApp } from '../apps/Terminal';
 import { FileExplorer } from '../apps/FileExplorer';
 import { TasksApp } from '../apps/Tasks';
+import { AboutApp } from '../apps/About';
 import { getAuthToken, login } from '../api/client';
 import { useState } from 'react';
 import { MenuBar } from './MenuBar';
@@ -47,6 +48,7 @@ export const App = () => {
           {win.app === 'terminal' && <TerminalApp windowId={win.id} />}
           {win.app === 'files' && <FileExplorer windowId={win.id} />}
           {win.app === 'tasks' && <TasksApp windowId={win.id} />}
+          {win.app === 'about' && <AboutApp />}
           {win.app === 'plugin' && win.pluginAppId && <PluginHost windowId={win.id} pluginAppId={win.pluginAppId} />}
         </Window>
       ))}

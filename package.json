@@ -1,5 +1,5 @@
 {
-  "name": "devos",
+  "name": "vpsos",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -7,8 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:api": "bun --filter @devos/api dev",
-    "dev:web": "bun --filter @devos/web dev",
+    "dev:api": "bun --filter @vpsos/api dev",
+    "dev:web": "bun --filter @vpsos/web dev",
     "lint": "bun --filter ./... run check"
   },
   "devDependencies": {

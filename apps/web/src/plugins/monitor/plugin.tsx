@@ -286,12 +286,12 @@ const ResourceMonitorApp = ({ windowId }: { windowId: string }) => {
 };
 
 const plugin: PluginDefinition = {
-  id: 'devos.monitor',
+  id: 'vpsos.monitor',
   name: 'Resource Monitor',
   version: '0.0.1',
   apps: [
     {
-      id: 'devos.monitor.app',
+      id: 'vpsos.monitor.app',
       title: 'Monitor',
       dock: true,
       render: ({ windowId }) => <ResourceMonitorApp windowId={windowId} />

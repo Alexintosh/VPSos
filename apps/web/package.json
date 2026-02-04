@@ -1,5 +1,5 @@
 {
-  "name": "@devos/web",
+  "name": "@vpsos/web",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -20,7 +20,7 @@
     "@vitejs/plugin-react": "^4.3.2",
     "@types/react": "^18.2.61",
     "@types/react-dom": "^18.2.19",
-    "@devos/shared": "workspace:*",
+    "@vpsos/shared": "workspace:*",
     "typescript": "^5.4.5",
     "vite": "^5.2.0"
   }

@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { PackageManager } from '@devos/shared';
+import { PackageManager } from '@vpsos/shared';
 
 export const readScripts = (pkg: any): string[] => Object.keys(pkg?.scripts || {});
 

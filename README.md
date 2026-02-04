@@ -1,6 +1,6 @@
-# Dev OS (VPS web-native workspace)
+# VPSos (VPS web-native workspace)
 
-Single-user web desktop with Bun/Elysia backend and React/Vite frontend, featuring sandboxed FS, PTY terminal, and smart Git/Node/Make toolbars.
+Single-user web desktop makes working on your VPS feel like a desktop OS, featuring sandboxed FS, PTY terminal, and smart Git/Node/Make toolbars.
 
 ## Quickstart
 

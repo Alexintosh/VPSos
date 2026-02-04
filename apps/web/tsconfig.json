@@ -6,7 +6,7 @@
     "outDir": "dist",
     "baseUrl": "./src",
     "paths": {
-      "@devos/shared": ["../../packages/shared/src"],
+      "@vpsos/shared": ["../../packages/shared/src"],
       "@vpsos/types": ["plugins/types"],
       "@vpsos/client": ["api/client"],
       "@vpsos/useUI": ["ui/state"],

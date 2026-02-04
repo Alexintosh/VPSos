@@ -1,12 +1,12 @@
-import { ProjectInfo, PackageManager, ProcMessage } from '@devos/shared';
+import { ProjectInfo, PackageManager, ProcMessage } from '@vpsos/shared';
 
 const API_BASE = '/api';
 
-let authToken: string | null = (typeof localStorage !== 'undefined' && localStorage.getItem('devos_token')) || null;
+let authToken: string | null = (typeof localStorage !== 'undefined' && localStorage.getItem('vpsos_token')) || null;
 
 export const setAuthToken = (token: string) => {
   authToken = token;
-  if (typeof localStorage !== 'undefined') localStorage.setItem('devos_token', token);
+  if (typeof localStorage !== 'undefined') localStorage.setItem('vpsos_token', token);
 };
 
 export const getAuthToken = () => authToken;

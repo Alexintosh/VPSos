@@ -2,7 +2,7 @@ import { Elysia, t } from 'elysia';
 import { config } from './config';
 
 const HEADER = 'authorization';
-const COOKIE = 'devos_session';
+const COOKIE = 'vpsos_session';
 
 const tokenMatches = (token?: string) => token === config.AUTH_TOKEN;
 

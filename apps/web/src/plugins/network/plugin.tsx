@@ -260,12 +260,12 @@ const NetworkApp = ({ windowId }: { windowId: string }) => {
 };
 
 const plugin: PluginDefinition = {
-  id: 'devos.network',
+  id: 'vpsos.network',
   name: 'Network',
   version: '0.0.1',
   apps: [
     {
-      id: 'devos.network.app',
+      id: 'vpsos.network.app',
       title: 'Network',
       dock: true,
       render: ({ windowId }) => <NetworkApp windowId={windowId} />

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { spawn, type Subprocess } from 'bun';
 import { config } from '../config';
-import { ProcMessage } from '@devos/shared';
+import { ProcMessage } from '@vpsos/shared';
 
 type SocketLike = { send: (data: any) => void; close: () => void };
 

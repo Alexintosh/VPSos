@@ -18,6 +18,7 @@ const buildMenus = (
   gridRows: number,
   setGrid: (rows: number, cols: number) => void,
   toggleMax: (id: string) => void,
+  openAbout: () => void,
   focusedId?: string | null
 ) => {
   // Map window menu items to menu format, with Fullscreen as maximize
@@ -43,8 +44,8 @@ const buildMenus = (
 
   return [
     {
-      title: 'DevOS',
-      items: [{ label: 'About DevOS' }]
+      title: 'VPSos',
+      items: [{ label: 'About VPSos', action: openAbout }]
     },
     {
       title: 'Window',
@@ -62,7 +63,7 @@ const buildMenus = (
 };
 
 export const MenuBar = () => {
-  const { windows, focusedId, tile, gridRows, setGrid, toggleMax } = useUI();
+  const { windows, focusedId, tile, gridRows, setGrid, toggleMax, open } = useUI();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const menubarRef = useRef<HTMLDivElement | null>(null);
   const focused = windows.find((w) => w.id === focusedId);
@@ -82,8 +83,9 @@ export const MenuBar = () => {
     gridRows,
     setGrid,
     (id) => toggleMax(id),
+    () => open('about'),
     focused?.id
-  ), [focused, gridRows, setGrid, tile, toggleMax]);
+  ), [focused, gridRows, setGrid, tile, toggleMax, open]);
   const sections = focused?.menus?.length ? [...baseSections, ...focused.menus] : baseSections;
 
   const toggle = (title: string) => {

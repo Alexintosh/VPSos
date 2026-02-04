@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { ReactNode } from 'react';
 
-export type AppType = 'terminal' | 'files' | 'tasks' | 'plugin';
+export type AppType = 'terminal' | 'files' | 'tasks' | 'plugin' | 'about';
 
 export interface MenuItem {
   label: string;
@@ -72,7 +72,7 @@ export const useUI = create<Store>((set) => ({
     const w: WindowState = {
       id,
       app,
-      title: app === 'terminal' ? 'Terminal' : app === 'files' ? 'Files' : 'Tasks',
+      title: app === 'terminal' ? 'Terminal' : app === 'files' ? 'Files' : app === 'about' ? 'About VPSos' : 'Tasks',
       x: 80 + state.windows.length * 20,
       y: 80 + state.windows.length * 20,
       w: 640,

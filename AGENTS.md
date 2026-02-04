@@ -1,7 +1,7 @@
 # AGENTS GUIDE
 
 ## Project overview
-- Name: **Dev OS** – macOS-inspired web desktop for VPS development use
+- Name: **VPS OS** – macOS-inspired web desktop for VPS development use
 - Stack: Bun 1.3.5+ with Elysia API (`apps/api`), React/Vite frontend (`apps/web`)
 - Core features: window manager (drag/min/max/tile), contextual top menu per focused window, File Explorer with Git/Node/Make toolbars, xterm.js terminal via Bun PTY, Tasks viewer streaming backend process logs
 
@@ -16,7 +16,7 @@
 ## Run commands
 - API (loads `.env` automatically): `make api`
 - Frontend (Vite dev server): `make web`
-- Type checks: `make check` (runs `bun run --filter @devos/api check` and `bun run --filter @devos/web check`)
+- Type checks: `make check` (runs `bun run --filter @vpsos/api check` and `bun run --filter @vpsos/web check`)
 
 ## Authentication workflow
 - Web UI top bar includes token field → click **Save token** to POST `/api/auth/login`; token then stored for API + WebSocket calls.

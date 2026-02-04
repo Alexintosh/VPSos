@@ -12,4 +12,4 @@ EXPOSE 5173
 
 ENV NODE_ENV=development
 
-CMD ["bun", "run", "--filter", "@devos/web", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
+CMD ["bun", "run", "--filter", "@vpsos/web", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
