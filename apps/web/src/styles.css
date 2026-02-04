@@ -314,6 +314,47 @@ body,
 
 .traffic .max {
   background: #28c840;
+  position: relative;
+}
+
+.tile-menu-window {
+  position: absolute;
+  top: 28px;
+  left: 8px;
+  background: rgba(30, 33, 40, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 6px;
+  min-width: 200px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+}
+
+.tile-menu-window .tile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.tile-menu-window .tile-menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tile-menu-window .tile-menu-item .menu-icon {
+  width: 20px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .content {

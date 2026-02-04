@@ -1,24 +1,6 @@
 import { CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import { MenuSection, useUI } from './state';
-
-type IconStyle = CSSProperties & {
-  ['--tile-left']?: string;
-  ['--tile-top']?: string;
-  ['--tile-width']?: string;
-  ['--tile-height']?: string;
-};
-
-const TileIcon = ({ left, top, width, height }: { left: number; top: number; width: number; height: number }) => (
-  <span
-    className="menu-icon"
-    style={{
-      '--tile-left': `${left}%`,
-      '--tile-top': `${top}%`,
-      '--tile-width': `${width}%`,
-      '--tile-height': `${height}%`
-    } as IconStyle}
-  />
-);
+import { windowMenuItems, getTileIconStyle } from './windowMenu';
 
 const GridIcon = ({ rows, cols }: { rows: number; cols: number }) => {
   const style: CSSProperties = {
@@ -38,18 +20,20 @@ const buildMenus = (
   toggleMax: (id: string) => void,
   focusedId?: string | null
 ) => {
-  const windowItems = [
-    { label: 'Center', action: () => hasWindow && tile('center'), icon: <TileIcon left={15} top={15} width={70} height={70} /> },
-    { label: 'Fullscreen', action: () => hasWindow && focusedId && toggleMax(focusedId), icon: <TileIcon left={0} top={0} width={100} height={100} /> },
-    { label: 'Half Left', action: () => hasWindow && tile('left'), icon: <TileIcon left={0} top={0} width={50} height={100} /> },
-    { label: 'Half Right', action: () => hasWindow && tile('right'), icon: <TileIcon left={50} top={0} width={50} height={100} /> },
-    { label: 'Half Top', action: () => hasWindow && tile('top'), icon: <TileIcon left={0} top={0} width={100} height={50} /> },
-    { label: 'Half Bottom', action: () => hasWindow && tile('bottom'), icon: <TileIcon left={0} top={50} width={100} height={50} /> },
-    { label: 'Upper Left', action: () => hasWindow && tile('tl'), icon: <TileIcon left={0} top={0} width={50} height={50} /> },
-    { label: 'Upper Right', action: () => hasWindow && tile('tr'), icon: <TileIcon left={50} top={0} width={50} height={50} /> },
-    { label: 'Lower Left', action: () => hasWindow && tile('bl'), icon: <TileIcon left={0} top={50} width={50} height={50} /> },
-    { label: 'Lower Right', action: () => hasWindow && tile('br'), icon: <TileIcon left={50} top={50} width={50} height={50} /> }
-  ].map((item) => ({ ...item, disabled: !hasWindow }));
+  // Map window menu items to menu format, with Fullscreen as maximize
+  const windowItems = windowMenuItems.map((item) => ({
+    label: item.label,
+    action: () => {
+      if (!hasWindow) return;
+      if (item.label === 'Fullscreen' && focusedId) {
+        toggleMax(focusedId);
+      } else {
+        tile(item.action);
+      }
+    },
+    icon: <span className="menu-icon" style={getTileIconStyle(item.icon)} />,
+    disabled: !hasWindow
+  }));
 
   const gridOptions = [
     { label: '4-cell (2×2)', rows: 2, cols: 2 },
