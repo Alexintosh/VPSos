@@ -2,6 +2,8 @@
 
 Single-user web desktop makes working on your VPS feel like a desktop OS, featuring sandboxed FS, PTY terminal, and smart Git/Node/Make toolbars.
 
+🌐 **Website**: [alexintosh.github.io/vpsos](https://alexintosh.github.io/vpsos)
+
 ## Quickstart
 
 1) Install deps

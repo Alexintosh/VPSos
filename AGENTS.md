@@ -2,6 +2,7 @@
 
 ## Project overview
 - Name: **VPS OS** – macOS-inspired web desktop for VPS development use
+- GitHub Pages site: `docs/index.html` (hosted at alexintosh.github.io/vpsos)
 - Stack: Bun 1.3.5+ with Elysia API (`apps/api`), React/Vite frontend (`apps/web`)
 - Core features: window manager (drag/min/max/tile), contextual top menu per focused window, File Explorer with Git/Node/Make toolbars, xterm.js terminal via Bun PTY, Tasks viewer streaming backend process logs
 
