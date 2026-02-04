@@ -64,15 +64,25 @@ FS_SANDBOX=off
 
 Then restart the containers.
 
+### Active development with Docker
+
+For development with hot reload, use the dev compose file which mounts source code directly:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
+
+Changes to source files are reflected immediately without rebuilding.
+
 ### Rebuilding after code changes
 
-Code is baked into the image at build time. After making changes, rebuild and restart:
+For production-like runs, code is baked into the image at build time. After making changes, rebuild:
 
 ```bash
 docker compose up --build
 ```
 
-For faster development, run natively with `make api` and `make web` instead.
+Or run natively with `make api` and `make web` for the fastest feedback loop.
 
 ## Useful commands
 

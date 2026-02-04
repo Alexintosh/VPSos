@@ -51,6 +51,13 @@ export const TerminalApp = ({ windowId }: { windowId: string }) => {
         const ws = openPtySocket(ptyId);
         wsRef.current = ws;
         ws.binaryType = 'arraybuffer';
+        ws.onopen = () => {
+          // Trigger shell redraw after WebSocket is ready with a small delay
+          setTimeout(() => {
+            resizeAndSend();
+            term.focus();
+          }, 50);
+        };
         ws.onmessage = (ev) => {
           if (typeof ev.data === 'string') {
             try {
@@ -63,7 +70,6 @@ export const TerminalApp = ({ windowId }: { windowId: string }) => {
           }
         };
         term.onData((data) => ws.send(new TextEncoder().encode(data)));
-        resizeAndSend();
       } catch (e: any) {
         term.writeln(`PTY error: ${e?.message || e}`);
       }

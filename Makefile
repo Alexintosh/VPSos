@@ -1,4 +1,4 @@
-.PHONY: api web check env
+.PHONY: api web check env docker-dev
 
 # Load .env (if present) and run API
 api:
@@ -15,3 +15,7 @@ check:
 # Copy example env
 env:
 	@test -f .env || cp .env.example .env
+
+# Run in Docker with hot reload (dev mode)
+docker-dev:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up
