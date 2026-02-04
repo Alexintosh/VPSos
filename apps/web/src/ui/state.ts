@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { ReactNode } from 'react';
 
-export type AppType = 'terminal' | 'files' | 'tasks' | 'plugin';
+export type AppType = 'terminal' | 'files' | 'tasks' | 'plugin' | 'about';
 
 export interface MenuItem {
   label: string;
@@ -13,6 +13,12 @@ export interface MenuItem {
 export interface MenuSection {
   title: string;
   items: MenuItem[];
+}
+
+export interface WindowData {
+  initialCommand?: string;
+  autoRun?: boolean;
+  cwd?: string;
 }
 
 export interface WindowState {
@@ -29,6 +35,7 @@ export interface WindowState {
   maximized: boolean;
   prev?: { x: number; y: number; w: number; h: number };
   menus?: MenuSection[];
+  data?: WindowData;
 }
 
 interface Store {
@@ -37,7 +44,7 @@ interface Store {
   nextZ: number;
   gridRows: number;
   gridCols: number;
-  open(app: AppType): void;
+  open(app: AppType, data?: WindowData): void;
   openPlugin(pluginAppId: string, title: string): void;
   close(id: string): void;
   focus(id: string): void;
@@ -60,12 +67,12 @@ export const useUI = create<Store>((set) => ({
   nextZ: 1,
   gridRows: 2,
   gridCols: 2,
-  open: (app) => set((state) => {
+  open: (app, data) => set((state) => {
     const id = `${app}-${++counter}`;
     const w: WindowState = {
       id,
       app,
-      title: app === 'terminal' ? 'Terminal' : app === 'files' ? 'Files' : 'Tasks',
+      title: app === 'terminal' ? 'Terminal' : app === 'files' ? 'Files' : app === 'about' ? 'About VPSos' : 'Tasks',
       x: 80 + state.windows.length * 20,
       y: 80 + state.windows.length * 20,
       w: 640,
@@ -73,7 +80,8 @@ export const useUI = create<Store>((set) => ({
       z: state.nextZ,
       minimized: false,
       maximized: false,
-      menus: []
+      menus: [],
+      data
     };
     return { windows: [...state.windows, w], nextZ: state.nextZ + 1, focusedId: id };
   }),
@@ -116,7 +124,8 @@ export const useUI = create<Store>((set) => ({
         return { ...w, maximized: false };
       }
       const prev = { x: w.x, y: w.y, w: w.w, h: w.h };
-      const padding = 16;
+      const padding = 0;
+      const topBar = 44;
       const width = typeof window !== 'undefined' ? window.innerWidth : 1280;
       const height = typeof window !== 'undefined' ? window.innerHeight : 720;
       return {
@@ -125,9 +134,9 @@ export const useUI = create<Store>((set) => ({
         minimized: false,
         prev,
         x: padding,
-        y: 52,
+        y: topBar,
         w: width - padding * 2,
-        h: height - padding * 2 - 60
+        h: height - topBar - padding
       };
     })
   })),
@@ -141,8 +150,8 @@ export const useUI = create<Store>((set) => ({
     windows: state.windows.map((w) => w.id === id ? { ...w, menus } : w)
   })),
   tile: (id, layout) => set((state) => {
-    const padding = 12;
-    const topBar = 60;
+    const padding = 0;
+    const topBar = 44;
     const width = typeof window !== 'undefined' ? window.innerWidth : 1280;
     const height = typeof window !== 'undefined' ? window.innerHeight : 720;
     const rows = state.gridRows;

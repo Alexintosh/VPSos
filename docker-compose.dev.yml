@@ -1,0 +1,18 @@
+services:
+  api:
+    volumes:
+      - ./apps/api:/app/apps/api
+      - ./packages:/app/packages
+      - /app/node_modules
+      - /app/apps/api/node_modules
+    working_dir: /app
+    command: ["bun", "run", "--filter", "@vpsos/api", "dev"]
+
+  web:
+    volumes:
+      - ./apps/web:/app/apps/web
+      - ./packages:/app/packages
+      - /app/node_modules
+      - /app/apps/web/node_modules
+    working_dir: /app
+    command: ["bun", "run", "--filter", "@vpsos/web", "dev"]

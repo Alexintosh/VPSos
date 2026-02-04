@@ -14,6 +14,16 @@ interface PtyEntry {
 
 const ptys = new Map<string, PtyEntry>();
 
+export const getPtyCount = () => ptys.size;
+export const listPtys = () => Array.from(ptys.keys());
+export const killAllPtys = () => {
+  for (const [id, entry] of ptys) {
+    entry.terminal.close();
+    entry.proc.kill();
+  }
+  ptys.clear();
+};
+
 const broadcast = (entry: PtyEntry, data: Uint8Array) => {
   for (const ws of entry.connections) ws.send(data);
 };

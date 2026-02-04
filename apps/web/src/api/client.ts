@@ -1,12 +1,12 @@
-import { ProjectInfo, PackageManager, ProcMessage } from '@devos/shared';
+import { ProjectInfo, PackageManager, ProcMessage } from '@vpsos/shared';
 
 const API_BASE = '/api';
 
-let authToken: string | null = (typeof localStorage !== 'undefined' && localStorage.getItem('devos_token')) || null;
+let authToken: string | null = (typeof localStorage !== 'undefined' && localStorage.getItem('vpsos_token')) || null;
 
 export const setAuthToken = (token: string) => {
   authToken = token;
-  if (typeof localStorage !== 'undefined') localStorage.setItem('devos_token', token);
+  if (typeof localStorage !== 'undefined') localStorage.setItem('vpsos_token', token);
 };
 
 export const getAuthToken = () => authToken;
@@ -51,6 +51,7 @@ export const gitCheckout = (repoPath: string, branch: string) => api(`/git/check
 export const gitCreateBranch = (repoPath: string, name: string, from?: string) => api(`/git/create-branch`, { method: 'POST', body: JSON.stringify({ repoPath, name, from }), headers: { 'Content-Type': 'application/json' } });
 export const gitPull = (repoPath: string) => api(`/git/pull`, { method: 'POST', body: JSON.stringify({ repoPath }), headers: { 'Content-Type': 'application/json' } });
 export const gitPush = (repoPath: string) => api(`/git/push`, { method: 'POST', body: JSON.stringify({ repoPath }), headers: { 'Content-Type': 'application/json' } });
+export const gitClone = (cwd: string, url: string, dir?: string) => api(`/git/clone`, { method: 'POST', body: JSON.stringify({ cwd, url, dir }), headers: { 'Content-Type': 'application/json' } });
 
 export const nodeScripts = (projectPath: string) => api<{ packageManager: PackageManager; scripts: string[] }>(`/node/scripts`, { method: 'POST', body: JSON.stringify({ projectPath }), headers: { 'Content-Type': 'application/json' } });
 export const nodeInstall = (projectPath: string) => api<{ procId: string }>(`/node/install`, { method: 'POST', body: JSON.stringify({ projectPath }), headers: { 'Content-Type': 'application/json' } });
@@ -62,6 +63,8 @@ export const makeRun = (projectPath: string, target?: string) => api<{ procId: s
 export const openPty = (cwd: string, cols: number, rows: number) => api<{ ptyId: string }>(`/pty/open`, { method: 'POST', body: JSON.stringify({ cwd, cols, rows }), headers: { 'Content-Type': 'application/json' } });
 export const resizePtyApi = (ptyId: string, cols: number, rows: number) => api(`/pty/resize`, { method: 'POST', body: JSON.stringify({ ptyId, cols, rows }), headers: { 'Content-Type': 'application/json' } });
 export const closePtyApi = (ptyId: string) => api(`/pty/close`, { method: 'POST', body: JSON.stringify({ ptyId }), headers: { 'Content-Type': 'application/json' } });
+export const listPtys = () => api<{ count: number; ptys: string[] }>(`/pty/list`);
+export const killAllPtys = () => api<{ ok: boolean }>(`/pty/kill-all`, { method: 'POST' });
 
 export const spawnProc = (cwd: string, cmd: string, args: string[]) => api<{ procId: string }>(`/proc/spawn`, { method: 'POST', body: JSON.stringify({ cwd, cmd, args }), headers: { 'Content-Type': 'application/json' } });
 export const stopProc = (procId: string) => api(`/proc/stop`, { method: 'POST', body: JSON.stringify({ procId }), headers: { 'Content-Type': 'application/json' } });

@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
-import { FsEntry, getConfig, gitBranches, gitCheckout, gitCreateBranch, gitPull, gitPush, inspectProject, listDir, makeRun, makeTargets, nodeInstall, nodeRun, nodeScripts } from '../api/client';
+import { FsEntry, getConfig, gitBranches, gitCheckout, gitClone, gitCreateBranch, gitPull, gitPush, inspectProject, listDir, makeRun, makeTargets, nodeInstall, nodeRun, nodeScripts } from '../api/client';
 import { useTasks } from '../ui/tasksStore';
 import { useUI } from '../ui/state';
+import { Toolbar, ToolbarSection, ToolbarButton } from '../ui/Toolbar';
 
 export const FileExplorer = ({ windowId }: { windowId: string }) => {
   const [cwd, setCwd] = useState<string>('');
@@ -14,6 +15,9 @@ export const FileExplorer = ({ windowId }: { windowId: string }) => {
   const [makeData, setMakeData] = useState<string[] | null>(null);
   const [selectedScript, setSelectedScript] = useState<string>('');
   const [selectedMake, setSelectedMake] = useState<string>('');
+  const [showCloneInput, setShowCloneInput] = useState(false);
+  const [cloneUrl, setCloneUrl] = useState('');
+  const [cloneLoading, setCloneLoading] = useState(false);
   const tasks = useTasks();
   const setMenus = useUI((s) => s.setMenus);
 
@@ -122,67 +126,139 @@ export const FileExplorer = ({ windowId }: { windowId: string }) => {
 
   return (
     <div className="flex-col" style={{ height: '100%' }}>
-      <div className="toolbar">
-        <div className="path">{cwd || '/'}</div>
-        <div className="actions">
-          <button onClick={() => refresh(cwd)} disabled={loading}>Refresh</button>
-          <button onClick={goUp} disabled={cwd === '/'}>Up</button>
-        </div>
+      <div className="toolbar-nav">
+        <ToolbarButton icon="refresh" title="Refresh" onClick={() => refresh(cwd)} disabled={loading} />
+        <ToolbarButton icon="up" title="Up" onClick={goUp} disabled={cwd === '/'} />
+        <span className="toolbar-nav-path">{cwd || '/'}</span>
       </div>
-      {error && <div className="error">{error}</div>}
 
-      {project?.git && gitData && (
-        <div className="panel">
-          <div className="panel-title">Git</div>
-          <div className="row gap">
-            <select value={gitData.current} onChange={(e) => runGit(() => gitCheckout(project.git.root, e.target.value))}>
+      <Toolbar>
+        {project?.git && gitData ? (
+          <ToolbarSection title="Git" icon="git" defaultExpanded={true}>
+            <select 
+              value={gitData.current} 
+              onChange={(e) => runGit(() => gitCheckout(project.git.root, e.target.value))}
+              className="toolbar-select"
+            >
               {gitData.branches.map((b) => <option key={b}>{b}</option>)}
             </select>
-            <button onClick={() => runGit(() => gitPull(project.git.root))}>Pull</button>
-            <button onClick={() => runGit(() => gitPush(project.git.root))}>Push</button>
-            <input placeholder="new branch" onKeyDown={(e) => {
-              if (e.key === 'Enter' && e.currentTarget.value) {
-                const name = e.currentTarget.value;
-                runGit(() => gitCreateBranch(project.git.root, name, gitData.current));
-                e.currentTarget.value = '';
-              }
-            }} />
-          </div>
-        </div>
-      )}
+            <ToolbarButton icon="pull" title="Pull" onClick={() => runGit(() => gitPull(project.git.root))} />
+            <ToolbarButton icon="push" title="Push" onClick={() => runGit(() => gitPush(project.git.root))} />
+          </ToolbarSection>
+        ) : (
+          <ToolbarSection title="Git" icon="git" defaultExpanded={true}>
+            {showCloneInput ? (
+              <div className="toolbar-clone">
+                <input
+                  type="text"
+                  placeholder="git@github.com:user/repo.git"
+                  value={cloneUrl}
+                  onChange={(e) => setCloneUrl(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && cloneUrl) {
+                      setCloneLoading(true);
+                      gitClone(cwd, cloneUrl)
+                        .then(() => {
+                          setCloneUrl('');
+                          setShowCloneInput(false);
+                          refresh(cwd);
+                        })
+                        .catch((err: any) => setError(err?.message || 'Clone failed'))
+                        .finally(() => setCloneLoading(false));
+                    }
+                    if (e.key === 'Escape') {
+                      setShowCloneInput(false);
+                      setCloneUrl('');
+                    }
+                  }}
+                  disabled={cloneLoading}
+                  autoFocus
+                  className="toolbar-clone-input"
+                />
+                <button 
+                  onClick={() => {
+                    if (cloneUrl) {
+                      setCloneLoading(true);
+                      gitClone(cwd, cloneUrl)
+                        .then(() => {
+                          setCloneUrl('');
+                          setShowCloneInput(false);
+                          refresh(cwd);
+                        })
+                        .catch((err: any) => setError(err?.message || 'Clone failed'))
+                        .finally(() => setCloneLoading(false));
+                    }
+                  }}
+                  disabled={!cloneUrl || cloneLoading}
+                  className="toolbar-clone-btn"
+                >
+                  {cloneLoading ? '...' : 'Clone'}
+                </button>
+                <button 
+                  onClick={() => { setShowCloneInput(false); setCloneUrl(''); }}
+                  className="toolbar-clone-cancel"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <ToolbarButton 
+                icon="clone" 
+                title="Clone repo" 
+                onClick={() => setShowCloneInput(true)} 
+              />
+            )}
+          </ToolbarSection>
+        )}
 
-      {project?.node && nodeData && (
-        <div className="panel">
-          <div className="panel-title">Node ({nodeData.pm})</div>
-          <div className="row gap">
-            <button onClick={() => runTask(`install:${project.node.root}`, () => nodeInstall(project.node.root))}>Install</button>
-            <select value={selectedScript} onChange={(e) => setSelectedScript(e.target.value)}>
+        {project?.node && nodeData && (
+          <ToolbarSection title={nodeData.pm} icon="package" defaultExpanded={true}>
+            <ToolbarButton 
+              icon="download" 
+              title="Install" 
+              onClick={() => runTask(`install:${project.node.root}`, () => nodeInstall(project.node.root))} 
+            />
+            <select 
+              value={selectedScript} 
+              onChange={(e) => setSelectedScript(e.target.value)}
+              className="toolbar-select"
+            >
               {nodeData.scripts.map((s) => <option key={s}>{s}</option>)}
             </select>
-            <button onClick={() => {
-              if (selectedScript) runTask(`script:${selectedScript}`, () => nodeRun(project.node.root, selectedScript));
-            }}>Run</button>
-          </div>
-        </div>
-      )}
+            <ToolbarButton 
+              icon="play" 
+              title="Run"
+              onClick={() => selectedScript && runTask(`script:${selectedScript}`, () => nodeRun(project.node.root, selectedScript))}
+              disabled={!selectedScript}
+            />
+          </ToolbarSection>
+        )}
 
-      {project?.make && makeData && (
-        <div className="panel">
-          <div className="panel-title">Make</div>
-          <div className="row gap">
-            <select value={selectedMake} onChange={(e) => setSelectedMake(e.target.value)}>
+        {project?.make && makeData && (
+          <ToolbarSection title="Make" icon="wrench" defaultExpanded={false}>
+            <select 
+              value={selectedMake} 
+              onChange={(e) => setSelectedMake(e.target.value)}
+              className="toolbar-select"
+            >
               <option value="">(default)</option>
               {makeData.map((t) => <option key={t}>{t}</option>)}
             </select>
-            <button onClick={() => {
-              const target = selectedMake || undefined;
-              runTask(`make:${target || 'default'}`, () => makeRun(project.make.root, target));
-            }}>Run</button>
-          </div>
-        </div>
-      )}
+            <ToolbarButton 
+              icon="play" 
+              title="Run"
+              onClick={() => {
+                const target = selectedMake || undefined;
+                runTask(`make:${target || 'default'}`, () => makeRun(project.make.root, target));
+              }}
+            />
+          </ToolbarSection>
+        )}
+      </Toolbar>
 
-      <div className="list" style={{ flex: 1 }}>
+      {error && <div className="error">{error}</div>}
+
+      <div className="list" style={{ flex: 1, padding: '8px' }}>
         {loading && <div>Loading...</div>}
         {!loading && entries.map((e) => (
           <div key={e.path} className="entry" onDoubleClick={() => open(e)}>

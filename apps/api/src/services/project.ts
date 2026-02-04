@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
-import { ProjectInfo, GitStatusSummary, PackageManager } from '@devos/shared';
+import { ProjectInfo, GitStatusSummary, PackageManager } from '@vpsos/shared';
 import { enforceSandbox, normalizePath } from '../utils/path';
 import { spawnText } from '../utils/spawn';
 
