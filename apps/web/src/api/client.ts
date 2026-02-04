@@ -62,6 +62,8 @@ export const makeRun = (projectPath: string, target?: string) => api<{ procId: s
 export const openPty = (cwd: string, cols: number, rows: number) => api<{ ptyId: string }>(`/pty/open`, { method: 'POST', body: JSON.stringify({ cwd, cols, rows }), headers: { 'Content-Type': 'application/json' } });
 export const resizePtyApi = (ptyId: string, cols: number, rows: number) => api(`/pty/resize`, { method: 'POST', body: JSON.stringify({ ptyId, cols, rows }), headers: { 'Content-Type': 'application/json' } });
 export const closePtyApi = (ptyId: string) => api(`/pty/close`, { method: 'POST', body: JSON.stringify({ ptyId }), headers: { 'Content-Type': 'application/json' } });
+export const listPtys = () => api<{ count: number; ptys: string[] }>(`/pty/list`);
+export const killAllPtys = () => api<{ ok: boolean }>(`/pty/kill-all`, { method: 'POST' });
 
 export const spawnProc = (cwd: string, cmd: string, args: string[]) => api<{ procId: string }>(`/proc/spawn`, { method: 'POST', body: JSON.stringify({ cwd, cmd, args }), headers: { 'Content-Type': 'application/json' } });
 export const stopProc = (procId: string) => api(`/proc/stop`, { method: 'POST', body: JSON.stringify({ procId }), headers: { 'Content-Type': 'application/json' } });

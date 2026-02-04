@@ -28,15 +28,19 @@ export const TerminalApp = ({ windowId }: { windowId: string }) => {
   }, [setMenus, windowId]);
 
   useEffect(() => {
+    let isActive = true;
+    
     const term = new XTerm({ fontSize: 13, convertEol: true });
     const fit = new FitAddon();
     term.loadAddon(fit);
     termRef.current = term;
     fitRef.current = fit;
+    
     if (containerRef.current) {
       term.open(containerRef.current);
       fit.fit();
     }
+    
     const resizeAndSend = () => {
       if (!fitRef.current || !ptyIdRef.current) return;
       fitRef.current.fit();
@@ -50,16 +54,20 @@ export const TerminalApp = ({ windowId }: { windowId: string }) => {
         const cols = term.cols;
         const rows = term.rows;
         const { ptyId } = await openPty('.', cols, rows);
+        if (!isActive) {
+          // Component unmounted during async, clean up PTY
+          closePtyApi(ptyId).catch(() => {});
+          return;
+        }
         ptyIdRef.current = ptyId;
         const ws = openPtySocket(ptyId);
         wsRef.current = ws;
         ws.binaryType = 'arraybuffer';
         ws.onopen = () => {
-          // Trigger shell redraw after WebSocket is ready with a small delay
           setTimeout(() => {
+            if (!isActive) return;
             resizeAndSend();
             term.focus();
-            // Type initial command if provided
             if (initialCommand && ws.readyState === WebSocket.OPEN) {
               ws.send(new TextEncoder().encode(initialCommand));
               if (autoRun) {
@@ -69,6 +77,7 @@ export const TerminalApp = ({ windowId }: { windowId: string }) => {
           }, 50);
         };
         ws.onmessage = (ev) => {
+          if (!isActive) return;
           if (typeof ev.data === 'string') {
             try {
               const msg = JSON.parse(ev.data);
@@ -79,9 +88,13 @@ export const TerminalApp = ({ windowId }: { windowId: string }) => {
             term.write(data);
           }
         };
-        term.onData((data) => ws.send(new TextEncoder().encode(data)));
+        term.onData((data) => {
+          if (isActive && ws.readyState === WebSocket.OPEN) {
+            ws.send(new TextEncoder().encode(data));
+          }
+        });
       } catch (e: any) {
-        term.writeln(`PTY error: ${e?.message || e}`);
+        if (isActive) term.writeln(`PTY error: ${e?.message || e}`);
       }
     };
     start();
@@ -93,14 +106,16 @@ export const TerminalApp = ({ windowId }: { windowId: string }) => {
       observer = new ResizeObserver(() => resizeAndSend());
       observer.observe(containerRef.current);
     }
+    
     return () => {
+      isActive = false;
       window.removeEventListener('resize', onResize);
       observer?.disconnect();
       wsRef.current?.close();
       if (ptyIdRef.current) closePtyApi(ptyIdRef.current).catch(() => {});
       term.dispose();
     };
-  }, []);
+  }, [initialCommand, autoRun]);
 
   return <div style={{ height: '100%', width: '100%' }} ref={containerRef} />;
 };
