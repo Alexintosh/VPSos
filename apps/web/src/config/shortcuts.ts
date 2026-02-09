@@ -1,3 +1,5 @@
+import type { WindowData } from '../ui/state';
+
 export interface TerminalShortcut {
   id: string;
   name: string;
@@ -22,6 +24,29 @@ export const terminalShortcuts: TerminalShortcut[] = [
     command: 'claude',
     icon: 'play',
     autoRun: true
+  }
+];
+
+export interface PluginShortcut {
+  id: string;
+  name: string;
+  pluginAppId: string;
+  title?: string;
+  data?: WindowData;
+}
+
+export const pluginShortcuts: PluginShortcut[] = [
+  {
+    id: 'cc',
+    name: 'CC',
+    title: 'CC',
+    pluginAppId: 'vpsos.localweb.app',
+    data: {
+      pluginProps: {
+        default_url: 'http://127.0.0.1:3001/',
+        showToolbar: false
+      }
+    }
   }
 ];
 

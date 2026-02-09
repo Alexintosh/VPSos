@@ -19,6 +19,7 @@ export interface WindowData {
   initialCommand?: string;
   autoRun?: boolean;
   cwd?: string;
+  pluginProps?: Record<string, unknown>;
 }
 
 export interface WindowState {
@@ -45,7 +46,7 @@ interface Store {
   gridRows: number;
   gridCols: number;
   open(app: AppType, data?: WindowData): void;
-  openPlugin(pluginAppId: string, title: string): void;
+  openPlugin(pluginAppId: string, title: string, data?: WindowData): void;
   close(id: string): void;
   focus(id: string): void;
   minimize(id: string): void;
@@ -85,7 +86,7 @@ export const useUI = create<Store>((set) => ({
     };
     return { windows: [...state.windows, w], nextZ: state.nextZ + 1, focusedId: id };
   }),
-  openPlugin: (pluginAppId, title) => set((state) => {
+  openPlugin: (pluginAppId, title, data) => set((state) => {
     const id = `plugin-${++counter}`;
     const w: WindowState = {
       id,
@@ -99,7 +100,8 @@ export const useUI = create<Store>((set) => ({
       z: state.nextZ,
       minimized: false,
       maximized: false,
-      menus: []
+      menus: [],
+      data
     };
     return { windows: [...state.windows, w], nextZ: state.nextZ + 1, focusedId: id };
   }),
