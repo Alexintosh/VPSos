@@ -4,7 +4,7 @@
 - Name: **VPS OS** – macOS-inspired web desktop for VPS development use
 - GitHub Pages site: `docs/index.html` (hosted at alexintosh.github.io/vpsos)
 - Stack: Bun 1.3.5+ with Elysia API (`apps/api`), React/Vite frontend (`apps/web`)
-- Core features: window manager (drag/min/max/tile), contextual top menu per focused window, File Explorer with Git/Node/Make toolbars, xterm.js terminal via Bun PTY, Tasks viewer streaming backend process logs
+- Core features: window manager (drag/min/max/tile), contextual top menu per focused window, File Explorer with Git/Node/Make toolbars, xterm.js terminal via Bun PTY, Tasks viewer streaming backend process logs, Agents plugin for headless CLI agents with streamed JSON events
 
 ## Environment setup
 1. Install deps: `bun install`
@@ -13,6 +13,7 @@
    - `AUTH_TOKEN` (single-user secret)
    - `FS_ROOT`, `DEFAULT_CWD` (absolute paths allowed; sandbox controlled by `FS_SANDBOX`)
    - Bun PTY requires Bun ≥ 1.3.5
+   - Optional: install agent CLIs (e.g. `claude`) on the API host for the Agents plugin
 
 ## Run commands
 - API (loads `.env` automatically): `make api`
@@ -25,6 +26,7 @@
 ## Desktop UX notes
 - Windows support drag, resize (edge/corner handles), minimize/maximize, and snap tiling via edge drag or Window menu.
 - Menu bar is contextual: File Explorer injects **File/Git/Run** menus based on detected repo data; Terminal adds **Shell**, Tasks adds **Tasks** menu.
+- Agents plugin profiles are registered in `apps/api/src/services/agent.ts` and can be extended with additional CLIs that emit line-delimited JSON.
 
 ## Branching / CI expectations
 - Default branch: `main`
