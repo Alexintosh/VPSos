@@ -86,8 +86,38 @@ docker compose up --build
 
 Or run natively with `make api` and `make web` for the fastest feedback loop.
 
+## Building Executable
+
+Create a standalone executable with Bun:
+
+```bash
+# Full build (web + API + package)
+make build
+
+# This creates:
+# dist/vpsos/vpsos     - Ready-to-run package
+# dist/vpsos-api       - API executable only
+```
+
+### Running the Executable
+
+```bash
+# From the built package
+cd dist/vpsos
+./vpsos
+
+# Or run directly
+./dist/vpsos-api
+```
+
+The executable bundles the API server and web frontend. Access it at http://localhost:3000
+
 ## Useful commands
 
 ```bash
-make check   # typechecks api + web
+make check       # typechecks api + web
+make build       # build standalone executable
+make build-web   # build web frontend only
+make build-api   # build API executable only
+make clean-dist  # clean build artifacts
 ```

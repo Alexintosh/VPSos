@@ -9,6 +9,7 @@
     "check": "tsc --noEmit"
   },
   "dependencies": {
+    "@elysiajs/static": "^1.4.7",
     "@vpsos/shared": "workspace:*",
     "elysia": "^1.0.17",
     "zod": "^3.23.8"
