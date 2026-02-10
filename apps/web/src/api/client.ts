@@ -10,6 +10,10 @@ export const setAuthToken = (token: string) => {
 };
 
 export const getAuthToken = () => authToken;
+export const clearAuthToken = () => {
+  authToken = null;
+  if (typeof localStorage !== 'undefined') localStorage.removeItem('vpsos_token');
+};
 
 const withAuth = (init?: RequestInit): RequestInit => {
   const headers = new Headers(init?.headers || {});
@@ -26,16 +30,22 @@ const api = async <T>(path: string, init?: RequestInit): Promise<T> => {
   return res.json() as Promise<T>;
 };
 
-export const getConfig = () => api<{ fsSandbox: string; fsRoot?: string; defaultCwd: string }>(`/config`);
+export const getPublicConfig = async () => {
+  const res = await fetch(`${API_BASE}/public-config`);
+  if (!res.ok) throw new Error(await res.text() || res.statusText);
+  return res.json() as Promise<{ requireAuth: boolean }>;
+};
 
-export const login = async (token: string) => {
+export const getConfig = () => api<{ fsSandbox: string; fsRoot?: string; defaultCwd: string; requireAuth: boolean }>(`/config`);
+
+export const login = async (password: string) => {
   const res = await fetch(`${API_BASE}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token })
+    body: JSON.stringify({ password })
   });
   if (!res.ok) throw new Error(await res.text() || 'auth failed');
-  setAuthToken(token);
+  setAuthToken(password);
   return res.json();
 };
 
@@ -70,13 +80,11 @@ export const spawnProc = (cwd: string, cmd: string, args: string[]) => api<{ pro
 export const stopProc = (procId: string) => api(`/proc/stop`, { method: 'POST', body: JSON.stringify({ procId }), headers: { 'Content-Type': 'application/json' } });
 
 export const openProcSocket = (procId: string): WebSocket => {
-  const token = authToken ? `?token=${encodeURIComponent(authToken)}` : '';
-  return new WebSocket(`${location.origin.replace('http', 'ws')}/ws/proc/${procId}${token}`);
+  return new WebSocket(`${location.origin.replace('http', 'ws')}/ws/proc/${procId}`);
 };
 
 export const openPtySocket = (ptyId: string): WebSocket => {
-  const token = authToken ? `?token=${encodeURIComponent(authToken)}` : '';
-  return new WebSocket(`${location.origin.replace('http', 'ws')}/ws/pty/${ptyId}${token}`);
+  return new WebSocket(`${location.origin.replace('http', 'ws')}/ws/pty/${ptyId}`);
 };
 
 export type ProcStream = ProcMessage;
@@ -98,8 +106,7 @@ export const stopAgentSession = (sessionId: string) => api(`/agent/session/${ses
   method: 'POST'
 });
 export const openAgentSessionSocket = (sessionId: string): WebSocket => {
-  const token = authToken ? `?token=${encodeURIComponent(authToken)}` : '';
-  return new WebSocket(`${location.origin.replace('http', 'ws')}/ws/agent/session/${sessionId}${token}`);
+  return new WebSocket(`${location.origin.replace('http', 'ws')}/ws/agent/session/${sessionId}`);
 };
 
 export type AgentStream = AgentStreamMessage;

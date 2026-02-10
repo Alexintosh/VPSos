@@ -10,7 +10,8 @@
 1. Install deps: `bun install`
 2. Copy env template: `make env` (creates `.env` if missing)
 3. Set `.env` variables:
-   - `AUTH_TOKEN` (single-user secret)
+   - `REQUIRE_AUTH` (true/false)
+   - `USER_PASSWORD` (single-user password)
    - `FS_ROOT`, `DEFAULT_CWD` (absolute paths allowed; sandbox controlled by `FS_SANDBOX`)
    - Bun PTY requires Bun ≥ 1.3.5
    - Optional: install agent CLIs (e.g. `claude`) on the API host for the Agents plugin

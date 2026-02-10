@@ -17,7 +17,8 @@ bun install
 ```bash
 make env
 # then edit .env for your machine:
-# AUTH_TOKEN=dev
+# REQUIRE_AUTH=true
+# USER_PASSWORD=dev
 # FS_ROOT=/absolute/path/to/your/workspace
 # DEFAULT_CWD=/absolute/path/to/your/workspace
 ```
@@ -34,7 +35,9 @@ make api
 make web
 ```
 
-5) In the web UI, paste the AUTH_TOKEN in the top bar before using File Explorer/Terminal/Tasks.
+5) Open the web UI and sign in with USER_PASSWORD.
+
+Security note: In production, keep `REQUIRE_AUTH=true` and place the API behind a reverse proxy with HTTPS and additional access controls.
 
 ## Docker
 
@@ -43,7 +46,7 @@ Run the full stack with Docker Compose:
 ```bash
 # Copy and edit environment variables
 cp .env.example .env
-# Edit .env to set AUTH_TOKEN and other options
+# Edit .env to set USER_PASSWORD and other options
 
 # Build and start services
 docker compose up --build
