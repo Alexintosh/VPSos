@@ -1,4 +1,4 @@
-import { ProjectInfo, PackageManager, ProcMessage } from '@vpsos/shared';
+import { ProjectInfo, PackageManager, ProcMessage, AgentProfile, AgentStreamMessage, ChatSession, ChatSessionSummary } from '@vpsos/shared';
 
 const API_BASE = '/api';
 
@@ -80,3 +80,26 @@ export const openPtySocket = (ptyId: string): WebSocket => {
 };
 
 export type ProcStream = ProcMessage;
+
+export const listAgentProfiles = () => api<{ profiles: AgentProfile[] }>(`/agent/profiles`);
+export const listAgentSessions = () => api<{ sessions: ChatSessionSummary[] }>(`/agent/sessions`);
+export const createAgentSession = (profileId: string, systemPrompt?: string) => api<{ session: ChatSession }>(`/agent/session`, {
+  method: 'POST',
+  body: JSON.stringify({ profileId, systemPrompt }),
+  headers: { 'Content-Type': 'application/json' }
+});
+export const getAgentSession = (sessionId: string) => api<{ session: ChatSession }>(`/agent/session/${sessionId}`);
+export const sendAgentMessage = (sessionId: string, content: string, cwd?: string) => api<{ runId: string }>(`/agent/session/${sessionId}/message`, {
+  method: 'POST',
+  body: JSON.stringify({ content, cwd }),
+  headers: { 'Content-Type': 'application/json' }
+});
+export const stopAgentSession = (sessionId: string) => api(`/agent/session/${sessionId}/stop`, {
+  method: 'POST'
+});
+export const openAgentSessionSocket = (sessionId: string): WebSocket => {
+  const token = authToken ? `?token=${encodeURIComponent(authToken)}` : '';
+  return new WebSocket(`${location.origin.replace('http', 'ws')}/ws/agent/session/${sessionId}${token}`);
+};
+
+export type AgentStream = AgentStreamMessage;

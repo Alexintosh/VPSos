@@ -8,6 +8,7 @@ import { makeRoutes } from './routes/make';
 import { procRoutes } from './routes/proc';
 import { ptyRoutes } from './routes/pty';
 import { projectRoutes } from './routes/project';
+import { agentRoutes } from './routes/agent';
 
 const app = new Elysia({ prefix: '' })
   .state('config', config)
@@ -30,6 +31,7 @@ const app = new Elysia({ prefix: '' })
   .use(makeRoutes)
   .use(procRoutes)
   .use(ptyRoutes)
+  .use(agentRoutes)
   .listen({ port: config.PORT, hostname: config.HOST });
 
 const hostForLog = config.HOST === '0.0.0.0' ? 'localhost' : config.HOST;

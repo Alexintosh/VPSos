@@ -8,7 +8,7 @@ import { getAuthToken, login } from '../api/client';
 import { useState } from 'react';
 import { MenuBar } from './MenuBar';
 import { pluginRegistry, findPluginApp } from '@vpsos/plugins/registry';
-import { terminalShortcuts, type TerminalShortcut } from '../config/shortcuts';
+import { pluginShortcuts, terminalShortcuts, type TerminalShortcut } from '../config/shortcuts';
 
 const PluginHost = ({ windowId, pluginAppId }: { windowId: string; pluginAppId: string }) => {
   const app = findPluginApp(pluginAppId);
@@ -59,6 +59,15 @@ export const App = () => {
         <button onClick={() => open('tasks')}>Tasks</button>
         {pluginRegistry.apps.filter((a) => a.dock).map((app) => (
           <button key={app.id} onClick={() => openPlugin(app.id, app.title)}>{app.title}</button>
+        ))}
+        {pluginShortcuts.map((shortcut) => (
+          <button
+            key={shortcut.id}
+            onClick={() => openPlugin(shortcut.pluginAppId, shortcut.title || shortcut.name, shortcut.data)}
+            title={shortcut.name}
+          >
+            {shortcut.name}
+          </button>
         ))}
         <div className="dock-divider" />
         {terminalShortcuts.map((shortcut) => (
