@@ -45,6 +45,18 @@ const sanitizeRequestHeaders = (headers: Headers) => {
 const sanitizeResponseHeaders = (headers: Headers) => {
   const out = new Headers(headers);
   out.delete('content-length');
+  out.delete('content-security-policy');
+  out.delete('content-security-policy-report-only');
+  return out;
+};
+
+const rewriteHtml = (html: string, port: number) => {
+  const prefix = `/api/proxy/${port}`;
+  let out = html;
+  if (!/<base\s/i.test(out)) {
+    out = out.replace(/<head(\s[^>]*)?>/i, (match) => `${match}<base href="${prefix}/">`);
+  }
+  out = out.replace(/(["'])\/(?!\/)/g, `$1${prefix}/`);
   return out;
 };
 
@@ -70,6 +82,14 @@ export const proxyRoutes = new Elysia({ name: 'proxy' })
         body: request.method === 'GET' || request.method === 'HEAD' ? undefined : request.body,
         redirect: 'manual'
       });
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('text/html')) {
+        const text = await res.text();
+        const rewritten = rewriteHtml(text, port);
+        const headers = sanitizeResponseHeaders(res.headers);
+        headers.set('content-type', contentType);
+        return new Response(rewritten, { status: res.status, headers });
+      }
       return new Response(res.body, {
         status: res.status,
         headers: sanitizeResponseHeaders(res.headers)
@@ -100,6 +120,14 @@ export const proxyRoutes = new Elysia({ name: 'proxy' })
         body: request.method === 'GET' || request.method === 'HEAD' ? undefined : request.body,
         redirect: 'manual'
       });
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('text/html')) {
+        const text = await res.text();
+        const rewritten = rewriteHtml(text, port);
+        const headers = sanitizeResponseHeaders(res.headers);
+        headers.set('content-type', contentType);
+        return new Response(rewritten, { status: res.status, headers });
+      }
       return new Response(res.body, {
         status: res.status,
         headers: sanitizeResponseHeaders(res.headers)
