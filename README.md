@@ -21,6 +21,7 @@ make env
 # USER_PASSWORD=dev
 # FS_ROOT=/absolute/path/to/your/workspace
 # DEFAULT_CWD=/absolute/path/to/your/workspace
+# PROXY_ALLOW_PORTS=3001,5173
 ```
 
 3) Run API (loads .env automatically via Makefile)
@@ -38,6 +39,16 @@ make web
 5) Open the web UI and sign in with USER_PASSWORD.
 
 Security note: In production, keep `REQUIRE_AUTH=true` and place the API behind a reverse proxy with HTTPS and additional access controls.
+
+### Local Web proxy (VPS localhost)
+
+To view services bound to `127.0.0.1` on the VPS through the Local Web plugin, allow specific ports:
+
+```bash
+PROXY_ALLOW_PORTS=3001,5173
+```
+
+Then enable **VPS Proxy** in the Local Web toolbar and load the service URL.
 
 ## Docker
 

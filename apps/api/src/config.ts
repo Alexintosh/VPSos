@@ -16,6 +16,8 @@ const configSchema = z.object({
   MAX_UPLOAD_BYTES: z.coerce.number().int().positive().default(10_485_760),
   GIT_PULL_REBASE: z.coerce.boolean().default(true),
   GIT_DEFAULT_REMOTE: z.string().default('origin'),
+  PROXY_ALLOW_ALL: z.coerce.boolean().default(false),
+  PROXY_ALLOW_PORTS: z.string().optional().default(''),
   HOST: z.string().default('0.0.0.0'),
   PORT: z.coerce.number().int().positive().default(3000)
 }).superRefine((val, ctx) => {
