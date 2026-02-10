@@ -36,6 +36,13 @@ make api
 make web
 ```
 
+If the Vite dev proxy fails to connect to the API (e.g., IPv6 `::1`), set an explicit IPv4 target:
+
+```bash
+VITE_API_PROXY_TARGET=http://127.0.0.1:3000
+VITE_WS_PROXY_TARGET=ws://127.0.0.1:3000
+```
+
 5) Open the web UI and sign in with USER_PASSWORD.
 
 Security note: In production, keep `REQUIRE_AUTH=true` and place the API behind a reverse proxy with HTTPS and additional access controls.
