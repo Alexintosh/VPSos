@@ -1,0 +1,31 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    environment:
+      AUTH_TOKEN: ${AUTH_TOKEN:-changeme}
+      AUTH_MODE: ${AUTH_MODE:-token}
+      HOST: 0.0.0.0
+      PORT: ${PORT:-3000}
+      FS_SANDBOX: ${FS_SANDBOX:-on}
+      FS_ROOT: /data
+      DEFAULT_CWD: /data
+      DEFAULT_SHELL: ${DEFAULT_SHELL:-/bin/bash}
+      ALLOW_RUN_AS_ROOT: ${ALLOW_RUN_AS_ROOT:-false}
+      MAX_PTY: ${MAX_PTY:-16}
+    volumes:
+      - ./:/data
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile.prod
+    ports:
+      - "${WEB_PORT:-80}:80"
+    environment:
+      API_URL: http://api:${PORT:-3000}
+    depends_on:
+      - api
