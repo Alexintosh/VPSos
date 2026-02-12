@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
 const configSchema = z.object({
-  AUTH_TOKEN: z.string().min(1),
+  REQUIRE_AUTH: z.coerce.boolean().default(true),
+  USER_PASSWORD: z.string().optional(),
+  AUTH_TOKEN: z.string().optional(),
   AUTH_MODE: z.enum(['token']).default('token'),
   FS_SANDBOX: z.enum(['on', 'off']).default('on'),
   FS_ROOT: z.string().default('/'),
@@ -14,8 +16,17 @@ const configSchema = z.object({
   MAX_UPLOAD_BYTES: z.coerce.number().int().positive().default(10_485_760),
   GIT_PULL_REBASE: z.coerce.boolean().default(true),
   GIT_DEFAULT_REMOTE: z.string().default('origin'),
+  PROXY_ALLOW_ALL: z.coerce.boolean().default(false),
+  PROXY_ALLOW_PORTS: z.string().optional().default(''),
   HOST: z.string().default('0.0.0.0'),
   PORT: z.coerce.number().int().positive().default(3000)
+}).superRefine((val, ctx) => {
+  if (val.REQUIRE_AUTH && !val.USER_PASSWORD && !val.AUTH_TOKEN) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'REQUIRE_AUTH is true but no USER_PASSWORD or AUTH_TOKEN was provided'
+    });
+  }
 });
 
 export const config = configSchema.parse(process.env);

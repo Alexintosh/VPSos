@@ -9,15 +9,18 @@ import { procRoutes } from './routes/proc';
 import { ptyRoutes } from './routes/pty';
 import { projectRoutes } from './routes/project';
 import { agentRoutes } from './routes/agent';
+import { proxyRoutes } from './routes/proxy';
 
 const app = new Elysia({ prefix: '' })
   .state('config', config)
   .use(authPlugin)
   .get('/api/health', () => ({ ok: true }))
+  .get('/api/public-config', () => ({ requireAuth: config.REQUIRE_AUTH }))
   .get('/api/config', () => ({
     fsSandbox: config.FS_SANDBOX,
     fsRoot: config.FS_SANDBOX === 'on' ? config.FS_ROOT : undefined,
     defaultCwd: config.DEFAULT_CWD,
+    requireAuth: config.REQUIRE_AUTH,
     limits: {
       maxProcs: config.MAX_PROCS,
       maxPty: config.MAX_PTY,
@@ -32,6 +35,7 @@ const app = new Elysia({ prefix: '' })
   .use(procRoutes)
   .use(ptyRoutes)
   .use(agentRoutes)
+  .use(proxyRoutes)
   .listen({ port: config.PORT, hostname: config.HOST });
 
 const hostForLog = config.HOST === '0.0.0.0' ? 'localhost' : config.HOST;

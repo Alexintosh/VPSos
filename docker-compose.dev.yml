@@ -1,5 +1,9 @@
 services:
   api:
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    environment:
+      PORT: ${PORT:-3000}
     volumes:
       - ./apps/api:/app/apps/api
       - ./packages:/app/packages

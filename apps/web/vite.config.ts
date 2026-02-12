@@ -4,7 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
-const apiTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:3000';
+const apiTarget = process.env.VITE_API_PROXY_TARGET || 'http://127.0.0.1:3000';
 const wsTarget = process.env.VITE_WS_PROXY_TARGET || apiTarget.replace(/^http/, 'ws');
 
 export default defineConfig({

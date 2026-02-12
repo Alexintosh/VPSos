@@ -17,9 +17,11 @@ bun install
 ```bash
 make env
 # then edit .env for your machine:
-# AUTH_TOKEN=dev
+# REQUIRE_AUTH=true
+# USER_PASSWORD=dev
 # FS_ROOT=/absolute/path/to/your/workspace
 # DEFAULT_CWD=/absolute/path/to/your/workspace
+# PROXY_ALLOW_PORTS=3001,5173
 ```
 
 3) Run API (loads .env automatically via Makefile)
@@ -34,7 +36,26 @@ make api
 make web
 ```
 
-5) In the web UI, paste the AUTH_TOKEN in the top bar before using File Explorer/Terminal/Tasks.
+If the Vite dev proxy fails to connect to the API (e.g., IPv6 `::1`), set an explicit IPv4 target:
+
+```bash
+VITE_API_PROXY_TARGET=http://127.0.0.1:3000
+VITE_WS_PROXY_TARGET=ws://127.0.0.1:3000
+```
+
+5) Open the web UI and sign in with USER_PASSWORD.
+
+Security note: In production, keep `REQUIRE_AUTH=true` and place the API behind a reverse proxy with HTTPS and additional access controls.
+
+### Local Web proxy (VPS localhost)
+
+To view services bound to `127.0.0.1` on the VPS through the Local Web plugin, allow specific ports:
+
+```bash
+PROXY_ALLOW_PORTS=3001,5173
+```
+
+Then enable **VPS Proxy** in the Local Web toolbar and load the service URL.
 
 ## Docker
 
@@ -43,7 +64,7 @@ Run the full stack with Docker Compose:
 ```bash
 # Copy and edit environment variables
 cp .env.example .env
-# Edit .env to set AUTH_TOKEN and other options
+# Edit .env to set USER_PASSWORD and other options
 
 # Build and start services
 docker compose up --build
